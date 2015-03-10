@@ -83,9 +83,10 @@ class SpectronusData_Dialog(Frame):
 
         if (len(tableNames) < 3):
             # It is the old database with all the data in one table.
-            selectSTR = 'SELECT Collection_Start_Time,CO2, 12CO2,13CO2,del13C, CH4,N2O,H2O,'
+            selectSTR = 'SELECT Collection_Start_Time,CO2, CO2_1,CO2_2,CV_del13C,CO,CH4,N2O,H2O,'
             selectSTR += 'Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
-            selectSTR += 'FROM sysvariables where Collection_Start_Time between ' + chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
+            selectSTR += 'FROM sysvariables where Collection_Start_Time between '
+            selectSTR += chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
             if (databaseFilename.find('Eddy') != -1):
                 selectSTR += ' and Collection_Start_Time Not between ' + chr(39) + '2014-07-04 04:45' + chr(39)
                 selectSTR += ' and ' + chr(39) + '2014-07-04 13:15' + chr(39)
@@ -101,17 +102,16 @@ class SpectronusData_Dialog(Frame):
             CO2 = LoadData(rows, 1)
             CO2_12 = LoadData(rows, 2)
             CO2_13 = LoadData(rows, 3)
-            Del13C_cal_e = LoadData(rows, 4)
-            Del13C_cal_a = LoadData(rows, 5)
-            CO = LoadData(rows, 6)
-            CH4 = LoadData(rows, 7)
-            N2O = LoadData(rows, 8)
-            H2O = LoadData(rows, 9)
-            CellTemp = LoadData(rows, 10)
-            RoomTemp = LoadData(rows, 11)
-            CellPress = LoadData(rows, 12)
-            FlowIn = LoadData(rows, 13)
-            FlowOut = LoadData(rows, 14)
+            Del13C = LoadData(rows, 4)
+            CO = LoadData(rows, 5)
+            CH4 = LoadData(rows, 6)
+            N2O = LoadData(rows, 7)
+            H2O = LoadData(rows, 8)
+            CellTemp = LoadData(rows, 9)
+            RoomTemp = LoadData(rows, 10)
+            CellPress = LoadData(rows, 11)
+            FlowIn = LoadData(rows, 12)
+            FlowOut = LoadData(rows, 13)
 
         else:
             # It is the new database with multiple tables.
