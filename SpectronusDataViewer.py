@@ -76,79 +76,56 @@ class SpectronusData_Dialog(Frame):
         con = lite.connect(databaseFilename)
         cur = con.cursor()
 
-        # Check how many tables there is in the database to determine which database version is being used
-        selectSTR = 'SELECT name from sqlite_master WHERE type=\'table\''
-        cur.execute(selectSTR)
-        tableNames = cur.fetchall()
+        # Primary key and date/time from sysvariables
+        selectSTR = 'SELECT  sysvariablesPK, Collection_Start_Time, Inlet FROM sysvariables where Collection_Start_Time between '
+        selectSTR += chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
+        rows1 = ReadDatabase(databaseFilename, selectSTR)
+        sysvariablesPK = LoadData(rows1, 0)
 
-        if (len(tableNames) < 3):
-            # It is the old database with all the data in one table.
-            selectSTR = 'SELECT Collection_Start_Time,CO2, CO2_1,CO2_2,CV_del13C,CO,CH4,N2O,H2O,'
-            selectSTR += 'Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
-            selectSTR += 'FROM sysvariables where Collection_Start_Time between '
-            selectSTR += chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
-            if (databaseFilename.find('Eddy') != -1):
-                selectSTR += ' and Collection_Start_Time Not between ' + chr(39) + '2014-07-04 04:45' + chr(39)
-                selectSTR += ' and ' + chr(39) + '2014-07-04 13:15' + chr(39)
-            #selectSTR += ' and Flow_In_Avg > 0.4'
-            #selectSTR += ' and Inlet = ' + chr(39) + 'Inlet_3' + chr(39)
-            #if (databaseFilename.find('Darwin') != -1):
-            #    selectSTR += ' and Cell_Pressure_Avg > 1098'
-            print selectSTR
+        readStartPos = str(sysvariablesPK[0])
+        readFinishPos = str(sysvariablesPK[len(sysvariablesPK) -1])
 
-            rows = ReadDatabase(databaseFilename, selectSTR)
+        # Uncorrected species.
+        selectSTR = 'SELECT CO2, CO2_1, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary where analysisprimaryID between '
+        selectSTR += readStartPos + ' and ' + readFinishPos
+        rows2 = ReadDatabase(databaseFilename, selectSTR)
 
-            Date = ConvertToDateTime(rows, 0)
-            CO2 = LoadData(rows, 1)
-            CO2_12 = LoadData(rows, 2)
-            CO2_13 = LoadData(rows, 3)
-            Del13C = LoadData(rows, 4)
-            CO = LoadData(rows, 5)
-            CH4 = LoadData(rows, 6)
-            N2O = LoadData(rows, 7)
-            H2O = LoadData(rows, 8)
-            CellTemp = LoadData(rows, 9)
-            RoomTemp = LoadData(rows, 10)
-            CellPress = LoadData(rows, 11)
-            FlowIn = LoadData(rows, 12)
-            FlowOut = LoadData(rows, 13)
+        # Calculated vals
+        selectSTR = 'SELECT CV_del13C FROM calcvals where calcvalsID between ' + readStartPos + ' and ' + readFinishPos
+        rows3 = ReadDatabase(databaseFilename, selectSTR)
 
-        else:
-            # It is the new database with multiple tables.
+        # AI averages
+        selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg FROM aiaverages where aiaveragesID between '
+        selectSTR += readStartPos + ' and ' + readFinishPos
+        rows4 = ReadDatabase(databaseFilename, selectSTR)
 
-            # Primary key and date/time from sysvariables
-            selectSTR = 'SELECT  sysvariablesPK, Collection_Start_Time FROM sysvariables where Collection_Start_Time between '
-            selectSTR += chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
-            rows1 = ReadDatabase(databaseFilename, selectSTR)
-            sysvariablesPK = LoadData(rows1, 0)
+        # Assemble all data into a single list
+        fullData = []
+        for i in range(0, len(rows1) -1):
+            fullData.append(rows1[i] + rows2[i] + rows3[i] + rows4[i])
 
-            readStartPos = str(sysvariablesPK[0])
-            readFinishPos = str(sysvariablesPK[len(sysvariablesPK) -1])
+        # Filter out lines that don't have all the data
+        filteredData = []
+        for row in fullData:
+            if (str(row).find('None') == -1):
+                filteredData.append(row)
+        fullData = []
 
-            # Uncorrected species.
-            selectSTR = 'SELECT CO2, CO2_1, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
-            rows2 = ReadDatabase(databaseFilename, selectSTR)
+        # Break the data into lists according to the inlet they are sampled from.
+        numInlets = 4
+        inletData = []
+        inletSTR = []
+        for i in range(1, numInlets + 1):
+            inletSTR.append('Inlet_' + str(i))
 
-            # Calculated vals
-            selectSTR = 'SELECT CV_del13C FROM calcvals where calcvalsID between ' + readStartPos + ' and ' + readFinishPos
-            rows3 = ReadDatabase(databaseFilename, selectSTR)
+        inletData = [[][][][]]
+        for i in range(0, numInlets):
+            if (filteredData[i][2] == inletSTR[i]):
+                inletData[i].append(filteredData[i])
 
-            # AI averages
-            selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg FROM aiaverages where aiaveragesID between '
-            selectSTR += readStartPos + ' and ' + readFinishPos
-            rows4 = ReadDatabase(databaseFilename, selectSTR)
-
-            # Assemble all data into a single list
-            fullData = []
-            for i in range(0, len(rows1) -1):
-                fullData.append(rows1[i] + rows2[i] + rows3[i] + rows4[i])
-
-            # Filter out lines that don't have all the data
-            filteredData = []
-            for row in fullData:
-                if (str(row).find('None') == -1):
-                    filteredData.append(row)
-
+        Date = []
+        '''
+        for i in range(0, numInlets):
             Date = ConvertToDateTime(filteredData, 1)
             CO2 = LoadData(filteredData, 2)
             CO2_12 = LoadData(filteredData, 3)
@@ -156,13 +133,13 @@ class SpectronusData_Dialog(Frame):
             CH4 = LoadData(filteredData, 5)
             N2O = LoadData(filteredData, 6)
             CO = LoadData(filteredData, 7)
-            H2O = LoadData(filteredData, 8)
-            Del13C = LoadData(filteredData, 9)
-            CellTemp = LoadData(filteredData, 10)
-            RoomTemp = LoadData(filteredData, 11)
-            CellPress = LoadData(filteredData, 12)
-            FlowIn = LoadData(filteredData, 13)
-            FlowOut = LoadData(filteredData, 14)
+            H2O = LoadData(filteredData, 9)
+            Del13C = LoadData(filteredData, 10)
+            CellTemp = LoadData(filteredData, 11)
+            RoomTemp = LoadData(filteredData, 12)
+            CellPress = LoadData(filteredData, 13)
+            FlowIn = LoadData(filteredData, 14)
+            FlowOut = LoadData(filteredData, 15)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
@@ -277,7 +254,7 @@ class SpectronusData_Dialog(Frame):
 
         SystemStateFig.autofmt_xdate()
         plt.show()
-
+        '''
         def quit():
             self.quit()
 
