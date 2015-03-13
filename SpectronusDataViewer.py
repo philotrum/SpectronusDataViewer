@@ -60,7 +60,7 @@ class SpectronusData_Dialog(Frame):
         self.file_opt = options = {}
         options['defaultextension'] = '.txt'
         options['filetypes'] = [('All files', '.*'), ('Database files', '.db')]
-        options['initialdir'] = 'c:/users/grahamk/dropbox/oooftidata/'
+        options['initialdir'] = 'c:/users/grahamk/dropbox/oooftidata/Thomas/150305_Jenolan/Database'
         options['initialfile'] = '*.db'
         options['parent'] = self.frame
         options['title'] = 'Select the tracker controller log file'
@@ -71,10 +71,6 @@ class SpectronusData_Dialog(Frame):
         databaseFilename = tkFileDialog.askopenfilename(**self.file_opt)
         startDate = self.frame.startDateTXT.get()
         finishDate = self.frame.finishDateTXT.get()
-
-        # Connect to the database
-        con = lite.connect(databaseFilename)
-        cur = con.cursor()
 
         # Primary key and date/time from sysvariables
         selectSTR = 'SELECT  sysvariablesPK, Collection_Start_Time, Inlet FROM sysvariables where Collection_Start_Time between '
@@ -103,6 +99,10 @@ class SpectronusData_Dialog(Frame):
         fullData = []
         for i in range(0, len(rows1) -1):
             fullData.append(rows1[i] + rows2[i] + rows3[i] + rows4[i])
+        rows1 = []
+        rows2 = []
+        rows3 = []
+        rows4 = []
 
         # Filter out lines that don't have all the data
         filteredData = []
@@ -113,17 +113,21 @@ class SpectronusData_Dialog(Frame):
 
         # Break the data into lists according to the inlet they are sampled from.
         numInlets = 4
-        inletData = []
-        inletSTR = []
-        for i in range(1, numInlets + 1):
-            inletSTR.append('Inlet_' + str(i))
+        inletData = [[] for i in range(numInlets)]
+        for row in filteredData:
+            if (row[2] == 'Inlet_1'):
+                inletData[0].append(row)
+            elif (row[2] == 'Inlet_2'):
+                inletData[1].append(row)
+            elif (row[2] == 'Inlet_3'):
+                inletData[2].append(row)
+            elif (row[2] == 'Inlet_4'):
+                inletData[3].append(row)
+            else:
+                # There is a problem!
+                pass
+        filteredData = []
 
-        inletData = [[][][][]]
-        for i in range(0, numInlets):
-            if (filteredData[i][2] == inletSTR[i]):
-                inletData[i].append(filteredData[i])
-
-        Date = []
         '''
         for i in range(0, numInlets):
             Date = ConvertToDateTime(filteredData, 1)
