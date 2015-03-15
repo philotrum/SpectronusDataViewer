@@ -7,7 +7,6 @@ Created 20140516
 Plot Spectronus data
 """
 
-import sqlite3 as lite
 import matplotlib.pyplot as plt
 from Tkinter import Tk, RIGHT, BOTH, RAISED
 from ttk import Frame, Button, Style, Label, Entry
@@ -116,44 +115,63 @@ class SpectronusData_Dialog(Frame):
         inletData = [[] for i in range(numInlets)]
         for row in filteredData:
             if (row[2] == 'Inlet_1'):
-                inletData[0].append(row)
+                inletData[0].append(row[:11])
             elif (row[2] == 'Inlet_2'):
-                inletData[1].append(row)
+                inletData[1].append(row[:11])
             elif (row[2] == 'Inlet_3'):
-                inletData[2].append(row)
+                inletData[2].append(row[:11])
             elif (row[2] == 'Inlet_4'):
-                inletData[3].append(row)
+                inletData[3].append(row[:11])
             else:
                 # There is a problem!
                 pass
+
+        Date = [[] for i in range(numInlets)]
+        CO2 =  [[] for i in range(numInlets)]
+        CO2_12 = [[] for i in range(numInlets)]
+        CO2_13 = [[] for i in range(numInlets)]
+        CH4 = [[] for i in range(numInlets)]
+        N2O = [[] for i in range(numInlets)]
+        CO = [[] for i in range(numInlets)]
+        H2O = [[] for i in range(numInlets)]
+        Del13C = [[] for i in range(numInlets)]
+
+        for i in range(0, numInlets):
+            Date[i] = ConvertToDateTime(inletData[i], 1)
+            CO2[i] = LoadData(inletData[i], 3)
+            CO2_12[i] = LoadData(inletData[i], 4)
+            CO2_13[i] = LoadData(inletData[i], 5)
+            CH4[i] = LoadData(inletData[i], 6)
+            N2O[i] = LoadData(inletData[i], 7)
+            CO[i] = LoadData(inletData[i], 8)
+            H2O[i] = LoadData(inletData[i], 9)
+            Del13C[i] = LoadData(inletData[i], 10)
+
+        # I don't want to separate the instrument data by inlet
+        fullDates = ConvertToDateTime(filteredData, 1)
+        CellTemp = LoadData(filteredData, 11)
+        RoomTemp = LoadData(filteredData, 12)
+        CellPress = LoadData(filteredData, 13)
+        FlowIn = LoadData(filteredData, 14)
+        FlowOut = LoadData(filteredData, 15)
+
         filteredData = []
 
-        '''
-        for i in range(0, numInlets):
-            Date = ConvertToDateTime(filteredData, 1)
-            CO2 = LoadData(filteredData, 2)
-            CO2_12 = LoadData(filteredData, 3)
-            CO2_13 = LoadData(filteredData, 4)
-            CH4 = LoadData(filteredData, 5)
-            N2O = LoadData(filteredData, 6)
-            CO = LoadData(filteredData, 7)
-            H2O = LoadData(filteredData, 9)
-            Del13C = LoadData(filteredData, 10)
-            CellTemp = LoadData(filteredData, 11)
-            RoomTemp = LoadData(filteredData, 12)
-            CellPress = LoadData(filteredData, 13)
-            FlowIn = LoadData(filteredData, 14)
-            FlowOut = LoadData(filteredData, 15)
+        for i in range(numInlets):
+            inletData[i] = []
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
-        ConcentrationsFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
+        ConcentrationsFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
+
+        colours = ['b', 'k', 'g', 'r']
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(611)
-        Ax1.scatter(Date,CO2, marker='+', label='CO2',color='r')
-        Ax1.scatter(Date,CO2_12, marker='+', label='12CO2', color='b')
-        Ax1.scatter(Date,CO2_13, marker='+', label='13CO2', color='g')
+        for i in range(numInlets):
+            Ax1.scatter(Date[i],CO2[i], marker='+', label='Inlet ' + str(i + 1),color=colours[i])
+        #Ax1.scatter(Date,CO2_12, marker='+', label='12CO2', color='b')
+        #Ax1.scatter(Date,CO2_13, marker='+', label='13CO2', color='g')
         Ax1.set_ylabel("CO2")
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -162,7 +180,8 @@ class SpectronusData_Dialog(Frame):
 
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
-        Ax2.scatter(Date,Del13C, marker='+', label='Del13C', color='r')
+        for i in range(numInlets):
+            Ax2.scatter(Date[i],Del13C[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax2.set_ylabel('Del13C')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -173,14 +192,16 @@ class SpectronusData_Dialog(Frame):
 
         # CO
         Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
-        Ax3.scatter(Date,CO, marker='+')
+        for i in range(numInlets):
+            Ax3.scatter(Date[i],CO[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax3.set_ylabel('CO')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CH4
         Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
-        Ax4.scatter(Date,CH4, marker='+')
+        for i in range(numInlets):
+            Ax4.scatter(Date[i],CH4[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax4.set_ylabel('CH4')
         Ax4.yaxis.tick_right()
         Ax4.yaxis.set_label_position("right")
@@ -189,7 +210,8 @@ class SpectronusData_Dialog(Frame):
 
         # N2O
         Ax5=ConcentrationsFig.add_subplot(615, sharex=Ax1)
-        Ax5.scatter(Date,N2O, marker='+')
+        for i in range(numInlets):
+            Ax5.scatter(Date[i],N2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax5.set_ylabel('N2O')
         Ax5.grid(True)
         #Ax5.set_ylim(300,400)
@@ -197,13 +219,14 @@ class SpectronusData_Dialog(Frame):
 
         # H2O
         Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
-        Ax6.scatter(Date,H2O, marker='+')
+        for i in range(numInlets):
+            Ax6.scatter(Date[i],H2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax6.set_ylabel('H2O')
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
-
+        '''
          # Set x axis range
         t0 = Date[0] - dt.timedelta(0,3600)
         t1= Date[len(Date) -1 ] + dt.timedelta(0,3600)
@@ -257,8 +280,10 @@ class SpectronusData_Dialog(Frame):
         Ax4.grid(True)
 
         SystemStateFig.autofmt_xdate()
-        plt.show()
         '''
+        ConcentrationsFig.autofmt_xdate()
+        plt.show()
+
         def quit():
             self.quit()
 
