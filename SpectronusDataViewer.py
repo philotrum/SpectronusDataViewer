@@ -115,13 +115,13 @@ class SpectronusData_Dialog(Frame):
         inletData = [[] for i in range(numInlets)]
         for row in filteredData:
             if (row[2] == 'Inlet_1'):
-                inletData[0].append(row[:11])
+                inletData[0].append(row)
             elif (row[2] == 'Inlet_2'):
-                inletData[1].append(row[:11])
+                inletData[1].append(row)
             elif (row[2] == 'Inlet_3'):
-                inletData[2].append(row[:11])
+                inletData[2].append(row)
             elif (row[2] == 'Inlet_4'):
-                inletData[3].append(row[:11])
+                inletData[3].append(row)
             else:
                 # There is a problem!
                 pass
@@ -135,6 +135,9 @@ class SpectronusData_Dialog(Frame):
         CO = [[] for i in range(numInlets)]
         H2O = [[] for i in range(numInlets)]
         Del13C = [[] for i in range(numInlets)]
+        CellPress = [[] for i in range(numInlets)]
+        FlowIn = [[] for i in range(numInlets)]
+        FlowOut = [[] for i in range(numInlets)]
 
         for i in range(0, numInlets):
             Date[i] = ConvertToDateTime(inletData[i], 1)
@@ -146,14 +149,14 @@ class SpectronusData_Dialog(Frame):
             CO[i] = LoadData(inletData[i], 8)
             H2O[i] = LoadData(inletData[i], 9)
             Del13C[i] = LoadData(inletData[i], 10)
+            CellPress[i] = LoadData(inletData[i], 13)
+            FlowIn[i] = LoadData(inletData[i], 14)
+            FlowOut[i] = LoadData(inletData[i], 15)
 
-        # I don't want to separate the instrument data by inlet
+        # I don't want to separate cell and room temperature data by inlet
         fullDates = ConvertToDateTime(filteredData, 1)
         CellTemp = LoadData(filteredData, 11)
         RoomTemp = LoadData(filteredData, 12)
-        CellPress = LoadData(filteredData, 13)
-        FlowIn = LoadData(filteredData, 14)
-        FlowOut = LoadData(filteredData, 15)
 
         filteredData = []
 
@@ -248,14 +251,17 @@ class SpectronusData_Dialog(Frame):
         SystemStateFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
 
          # Cell Pressure
-        Ax1=SystemStateFig.add_subplot(411)
-        Ax1.scatter(fullDates,CellPress, marker='+')
+        Ax1=SystemStateFig.add_subplot(511)
+        for i in range(numInlets):
+            Ax1.scatter(Date[i],CellPress[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax1.set_ylabel('Cell Pressure')
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
-        Ax2=SystemStateFig.add_subplot(412, sharex=Ax1)
+        Ax2=SystemStateFig.add_subplot(512, sharex=Ax1)
         Ax2.scatter(fullDates,CellTemp, marker='+', label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
@@ -264,22 +270,32 @@ class SpectronusData_Dialog(Frame):
         Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Room Temperature
-        Ax3=SystemStateFig.add_subplot(413, sharex=Ax1)
+        Ax3=SystemStateFig.add_subplot(513, sharex=Ax1)
         Ax3.scatter(fullDates,RoomTemp, marker='+', label='Room Temp')
         Ax3.set_ylabel('Room Temperature')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        # Cell flow
-        Ax4=SystemStateFig.add_subplot(414, sharex=Ax1)
-        Ax4.scatter(fullDates,FlowIn, marker='+', label='Flow In',color='r')
-        Ax4.scatter(fullDates,FlowOut, marker='+', label='Flow Out',color='b')
-        Ax4.set_ylabel('Cell Flows')
+        # Cell flow in
+        Ax4=SystemStateFig.add_subplot(514, sharex=Ax1)
+        for i in range(numInlets):
+            Ax4.scatter(Date[i], FlowIn[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
+        Ax4.set_ylabel('Cell Flow In')
         Ax4.yaxis.set_label_position("right")
         Ax4.yaxis.tick_right()
         Ax4.grid(True)
+        Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
+
+        # Cell flow out
+        Ax5=SystemStateFig.add_subplot(515, sharex=Ax1)
+        for i in range(numInlets):
+            Ax5.scatter(Date[i], FlowOut[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
+        Ax4.set_ylabel('Cell Flow Out')
+        Ax4.grid(True)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Set x axis range
