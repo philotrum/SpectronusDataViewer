@@ -194,6 +194,8 @@ class SpectronusData_Dialog(Frame):
         Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
         for i in range(numInlets):
             Ax3.scatter(Date[i],CO[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax3.set_ylabel('CO')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
@@ -203,6 +205,8 @@ class SpectronusData_Dialog(Frame):
         for i in range(numInlets):
             Ax4.scatter(Date[i],CH4[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax4.set_ylabel('CH4')
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax4.yaxis.tick_right()
         Ax4.yaxis.set_label_position("right")
         Ax4.grid(True)
@@ -212,6 +216,8 @@ class SpectronusData_Dialog(Frame):
         Ax5=ConcentrationsFig.add_subplot(615, sharex=Ax1)
         for i in range(numInlets):
             Ax5.scatter(Date[i],N2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax5.set_ylabel('N2O')
         Ax5.grid(True)
         #Ax5.set_ylim(300,400)
@@ -221,33 +227,36 @@ class SpectronusData_Dialog(Frame):
         Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
         for i in range(numInlets):
             Ax6.scatter(Date[i],H2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax6.set_ylabel('H2O')
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
-        '''
+
          # Set x axis range
-        t0 = Date[0] - dt.timedelta(0,3600)
-        t1= Date[len(Date) -1 ] + dt.timedelta(0,3600)
+        t0 = fullDates[0] - dt.timedelta(0,3600)
+        t1= fullDates[len(fullDates) -1 ] + dt.timedelta(0,3600)
         Ax6.set_xlim(t0,t1)
         Ax6.grid(True)
 
         ConcentrationsFig.autofmt_xdate()
 
+
         SystemStateFig = plt.figure('System State')
-        SystemStateFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
+        SystemStateFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
 
          # Cell Pressure
         Ax1=SystemStateFig.add_subplot(411)
-        Ax1.scatter(Date,CellPress, marker='+')
+        Ax1.scatter(fullDates,CellPress, marker='+')
         Ax1.set_ylabel('Cell Pressure')
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
         Ax2=SystemStateFig.add_subplot(412, sharex=Ax1)
-        Ax2.scatter(Date,CellTemp, marker='+', label='Cell Temp')
+        Ax2.scatter(fullDates,CellTemp, marker='+', label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
         Ax2.yaxis.tick_right()
@@ -256,15 +265,15 @@ class SpectronusData_Dialog(Frame):
 
         # Room Temperature
         Ax3=SystemStateFig.add_subplot(413, sharex=Ax1)
-        Ax3.scatter(Date,RoomTemp, marker='+', label='Room Temp')
+        Ax3.scatter(fullDates,RoomTemp, marker='+', label='Room Temp')
         Ax3.set_ylabel('Room Temperature')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell flow
         Ax4=SystemStateFig.add_subplot(414, sharex=Ax1)
-        Ax4.scatter(Date,FlowIn, marker='+', label='Flow In',color='r')
-        Ax4.scatter(Date,FlowOut, marker='+', label='Flow Out',color='b')
+        Ax4.scatter(fullDates,FlowIn, marker='+', label='Flow In',color='r')
+        Ax4.scatter(fullDates,FlowOut, marker='+', label='Flow Out',color='b')
         Ax4.set_ylabel('Cell Flows')
         Ax4.yaxis.set_label_position("right")
         Ax4.yaxis.tick_right()
@@ -274,14 +283,12 @@ class SpectronusData_Dialog(Frame):
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Set x axis range
-        t0 = Date[0] - dt.timedelta(0,3600)
-        t1= Date[len(Date) -1 ] + dt.timedelta(0,3600)
+        t0 = fullDates[0] - dt.timedelta(0,3600)
+        t1= fullDates[len(fullDates) -1 ] + dt.timedelta(0,3600)
         Ax4.set_xlim(t0,t1)
         Ax4.grid(True)
 
         SystemStateFig.autofmt_xdate()
-        '''
-        ConcentrationsFig.autofmt_xdate()
         plt.show()
 
         def quit():
