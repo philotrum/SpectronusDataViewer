@@ -294,15 +294,15 @@ class SpectronusData_Dialog(Frame):
             Ax5.scatter(Date[i], FlowOut[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
-        Ax4.set_ylabel('Cell Flow Out')
-        Ax4.grid(True)
-        Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
+        Ax5.set_ylabel('Cell Flow Out')
+        Ax5.grid(True)
+        Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Set x axis range
         t0 = fullDates[0] - dt.timedelta(0,3600)
         t1= fullDates[len(fullDates) -1 ] + dt.timedelta(0,3600)
-        Ax4.set_xlim(t0,t1)
-        Ax4.grid(True)
+        Ax5.set_xlim(t0,t1)
+        Ax5.grid(True)
 
         SystemStateFig.autofmt_xdate()
         plt.show()
