@@ -223,7 +223,6 @@ class SpectronusData_Dialog(Frame):
         leg.get_frame().set_alpha(0.5)
         Ax5.set_ylabel('N2O')
         Ax5.grid(True)
-        #Ax5.set_ylim(300,400)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # H2O
@@ -245,7 +244,6 @@ class SpectronusData_Dialog(Frame):
         Ax6.grid(True)
 
         ConcentrationsFig.autofmt_xdate()
-
 
         SystemStateFig = plt.figure('System State')
         SystemStateFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
