@@ -165,16 +165,16 @@ class SpectronusData_Dialog(Frame):
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
-        ConcentrationsFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
+        if (len(fullDates) > 0):
+            ConcentrationsFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
 
         colours = ['b', 'k', 'g', 'r']
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(611)
         for i in range(numInlets):
-            Ax1.scatter(Date[i],CO2[i], marker='+', label='Inlet ' + str(i + 1),color=colours[i])
-        #Ax1.scatter(Date,CO2_12, marker='+', label='12CO2', color='b')
-        #Ax1.scatter(Date,CO2_13, marker='+', label='13CO2', color='g')
+            if (len(CO2[i]) > 0):
+                Ax1.scatter(Date[i],CO2[i], marker='+', label='Inlet ' + str(i + 1),color=colours[i])
         Ax1.set_ylabel("CO2")
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -184,7 +184,8 @@ class SpectronusData_Dialog(Frame):
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
         for i in range(numInlets):
-            Ax2.scatter(Date[i],Del13C[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(Del13C[i]) > 0):
+                Ax2.scatter(Date[i],Del13C[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax2.set_ylabel('Del13C')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -196,7 +197,8 @@ class SpectronusData_Dialog(Frame):
         # CO
         Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
         for i in range(numInlets):
-            Ax3.scatter(Date[i],CO[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(CO[i]) > 0):
+                Ax3.scatter(Date[i],CO[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax3.set_ylabel('CO')
@@ -206,7 +208,8 @@ class SpectronusData_Dialog(Frame):
         # CH4
         Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
         for i in range(numInlets):
-            Ax4.scatter(Date[i],CH4[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(CH4[i]) > 0):
+                Ax4.scatter(Date[i],CH4[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         Ax4.set_ylabel('CH4')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -218,7 +221,8 @@ class SpectronusData_Dialog(Frame):
         # N2O
         Ax5=ConcentrationsFig.add_subplot(615, sharex=Ax1)
         for i in range(numInlets):
-            Ax5.scatter(Date[i],N2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(N2O[i]) > 0):
+                Ax5.scatter(Date[i],N2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax5.set_ylabel('N2O')
@@ -228,7 +232,8 @@ class SpectronusData_Dialog(Frame):
         # H2O
         Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
         for i in range(numInlets):
-            Ax6.scatter(Date[i],H2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(H2O[i]) > 0):
+                Ax6.scatter(Date[i],H2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax6.set_ylabel('H2O')
@@ -251,7 +256,8 @@ class SpectronusData_Dialog(Frame):
          # Cell Pressure
         Ax1=SystemStateFig.add_subplot(511)
         for i in range(numInlets):
-            Ax1.scatter(Date[i],CellPress[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(CellPress[i]) > 0):
+                Ax1.scatter(Date[i],CellPress[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax1.set_ylabel('Cell Pressure')
@@ -277,7 +283,8 @@ class SpectronusData_Dialog(Frame):
         # Cell flow in
         Ax4=SystemStateFig.add_subplot(514, sharex=Ax1)
         for i in range(numInlets):
-            Ax4.scatter(Date[i], FlowIn[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(FlowIn[i]) > 0):
+                Ax4.scatter(Date[i], FlowIn[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax4.set_ylabel('Cell Flow In')
@@ -289,7 +296,8 @@ class SpectronusData_Dialog(Frame):
         # Cell flow out
         Ax5=SystemStateFig.add_subplot(515, sharex=Ax1)
         for i in range(numInlets):
-            Ax5.scatter(Date[i], FlowOut[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+            if (len(FlowOut[i]) > 0):
+                Ax5.scatter(Date[i], FlowOut[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax5.set_ylabel('Cell Flow Out')
