@@ -126,7 +126,8 @@ class SpectronusData_Dialog(Frame):
             readFinishPos = str(sysvariablesPK[len(sysvariablesPK) -1])
 
             # Uncorrected species.
-            selectSTR = 'SELECT CO2, CO2_1, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
+            selectSTR = 'SELECT CO2, CO2_1, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary '
+            selectSTR += 'where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
             rows2 = ReadDatabase(databaseFilename, selectSTR)
 
             # Calculated vals
@@ -134,7 +135,8 @@ class SpectronusData_Dialog(Frame):
             rows3 = ReadDatabase(databaseFilename, selectSTR)
 
             # AI averages
-            selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg FROM aiaverages where aiaveragesID between '
+            selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
+            selectSTR += 'FROM aiaverages where aiaveragesID between '
             selectSTR += readStartPos + ' and ' + readFinishPos
             rows4 = ReadDatabase(databaseFilename, selectSTR)
 
