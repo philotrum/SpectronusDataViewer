@@ -17,7 +17,7 @@ import sys
 
 sys.path.append('c:/PythonScripts')
 
-from DatabaseManipulation import ReadDatabase, LoadData, ConvertToDateTime
+from DatabaseManipulation import NumTables, ReadDatabase, LoadData, ConvertToDateTime
 
 class SpectronusData_Dialog(Frame):
 
@@ -72,16 +72,7 @@ class SpectronusData_Dialog(Frame):
         startDate = self.frame.startDateTXT.get()
         finishDate = self.frame.finishDateTXT.get()
 
-        # Connect to the database
-        con = lite.connect(databaseFilename)
-        cur = con.cursor()
-
-        # Check how many tables there is in the database to determine which database version is being used
-        selectSTR = 'SELECT name from sqlite_master WHERE type=\'table\''
-        cur.execute(selectSTR)
-        tableNames = cur.fetchall()
-
-        if (len(tableNames) < 3):
+        if (NumTables(databaseFilename) < 3):
             # It is the old database with all the data in one table.
             selectSTR = 'SELECT Collection_Start_Time,CO2, CO2_1,CO2_2,CV_del13C,CO,CH4,N2O,H2O,'
             selectSTR += 'Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
