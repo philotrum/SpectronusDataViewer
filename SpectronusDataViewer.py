@@ -117,24 +117,24 @@ class SpectronusData_Dialog(Frame):
             readFinishPos = str(sysvariablesPK[len(sysvariablesPK) -1])
 
             # Uncorrected species.
-            selectSTR = 'SELECT CO2, CO2_1, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary '
+            selectSTR = 'SELECT CO2, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary '
             selectSTR += 'where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
             rows2 = ReadDatabase(databaseFilename, selectSTR)
 
-            # Calculated vals
-            selectSTR = 'SELECT CV_del13C FROM calcvals where calcvalsID between ' + readStartPos + ' and ' + readFinishPos
-            rows3 = ReadDatabase(databaseFilename, selectSTR)
+            ## Calculated vals
+            #selectSTR = 'SELECT CV_del13C FROM calcvals where calcvalsID between ' + readStartPos + ' and ' + readFinishPos
+            #rows3 = ReadDatabase(databaseFilename, selectSTR)
 
             # AI averages
             selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
             selectSTR += 'FROM aiaverages where aiaveragesID between '
             selectSTR += readStartPos + ' and ' + readFinishPos
-            rows4 = ReadDatabase(databaseFilename, selectSTR)
+            rows3 = ReadDatabase(databaseFilename, selectSTR)
 
             # Assemble all data into a single list
             fullData = []
             for i in range(0, len(rows1) -1):
-                fullData.append(rows1[i] + rows2[i] + rows3[i] + rows4[i])
+                fullData.append(rows1[i] + rows2[i] + rows3[i])
 
             # Filter out lines that don't have all the data
             filteredData = []
@@ -143,55 +143,54 @@ class SpectronusData_Dialog(Frame):
                     filteredData.append(row)
 
             Date = ConvertToDateTime(filteredData, 1)
-            CO2 = LoadData(filteredData, 2)
-            CO2_12 = LoadData(filteredData, 3)
-            CO2_13 = LoadData(filteredData, 4)
-            CH4 = LoadData(filteredData, 5)
-            N2O = LoadData(filteredData, 6)
-            CO = LoadData(filteredData, 7)
-            H2O = LoadData(filteredData, 8)
-            Del13C = LoadData(filteredData, 9)
-            CellTemp = LoadData(filteredData, 10)
-            RoomTemp = LoadData(filteredData, 11)
-            CellPress = LoadData(filteredData, 12)
-            FlowIn = LoadData(filteredData, 13)
-            FlowOut = LoadData(filteredData, 14)
+            CO2_2 = LoadData(filteredData, 2)
+            CO2_1_a = LoadData(filteredData, 3)
+            CH4 = LoadData(filteredData, 4)
+            N2O = LoadData(filteredData, 5)
+            CO = LoadData(filteredData, 6)
+            H2O = LoadData(filteredData, 7)
+            #Del13C = LoadData(filteredData, 9)
+            CellTemp = LoadData(filteredData, 8)
+            RoomTemp = LoadData(filteredData, 9)
+            CellPress = LoadData(filteredData, 10)
+            FlowIn = LoadData(filteredData, 11)
+            FlowOut = LoadData(filteredData, 12)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
         ConcentrationsFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
 
         # CO2
-        Ax1=ConcentrationsFig.add_subplot(611)
-        Ax1.scatter(Date,CO2, marker='+', label='CO2',color='r')
-        Ax1.scatter(Date,CO2_12, marker='+', label='12CO2', color='b')
-        Ax1.scatter(Date,CO2_13, marker='+', label='13CO2', color='g')
+        Ax1=ConcentrationsFig.add_subplot(511)
+        #Ax1.scatter(Date,CO2, marker='+', label='CO2',color='r')
+        Ax1.scatter(Date,CO2_2, marker='+', label='CO2_2', color='b')
+        Ax1.scatter(Date,CO2_1_a, marker='+', label='CO2_1_a', color='g')
         Ax1.set_ylabel("CO2")
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        # Del13C
-        Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
-        Ax2.scatter(Date,Del13C, marker='+', label='Del13C', color='r')
-        Ax2.set_ylabel('Del13C')
-        leg = plt.legend(loc=2,ncol=1, fancybox = True)
-        leg.get_frame().set_alpha(0.5)
-        Ax2.yaxis.set_label_position("right")
-        Ax2.yaxis.tick_right()
-        Ax2.grid(True)
-        Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
+        ## Del13C
+        #Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
+        #Ax2.scatter(Date,Del13C, marker='+', label='Del13C', color='r')
+        #Ax2.set_ylabel('Del13C')
+        #leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        #leg.get_frame().set_alpha(0.5)
+        #Ax2.yaxis.set_label_position("right")
+        #Ax2.yaxis.tick_right()
+        #Ax2.grid(True)
+        #Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CO
-        Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
+        Ax3=ConcentrationsFig.add_subplot(512, sharex=Ax1)
         Ax3.scatter(Date,CO, marker='+')
         Ax3.set_ylabel('CO')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CH4
-        Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
+        Ax4=ConcentrationsFig.add_subplot(513, sharex=Ax1)
         Ax4.scatter(Date,CH4, marker='+')
         Ax4.set_ylabel('CH4')
         Ax4.yaxis.tick_right()
@@ -200,7 +199,7 @@ class SpectronusData_Dialog(Frame):
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # N2O
-        Ax5=ConcentrationsFig.add_subplot(615, sharex=Ax1)
+        Ax5=ConcentrationsFig.add_subplot(514, sharex=Ax1)
         Ax5.scatter(Date,N2O, marker='+')
         Ax5.set_ylabel('N2O')
         Ax5.grid(True)
@@ -208,7 +207,7 @@ class SpectronusData_Dialog(Frame):
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # H2O
-        Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
+        Ax6=ConcentrationsFig.add_subplot(515, sharex=Ax1)
         Ax6.scatter(Date,H2O, marker='+')
         Ax6.set_ylabel('H2O')
         Ax6.yaxis.set_label_position("right")
