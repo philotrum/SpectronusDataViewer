@@ -60,7 +60,7 @@ class SpectronusData_Dialog(Frame):
         self.file_opt = options = {}
         options['defaultextension'] = '.txt'
         options['filetypes'] = [('All files', '.*'), ('Database files', '.db')]
-        options['initialdir'] = 'c:/users/grahamk/dropbox/oooftidata/'
+        options['initialdir'] = 'c:/users/grahamk/dropbox/oooftidata/Thomas/1507_Jenolan_Wet/Database'
         options['initialfile'] = '*.db'
         options['parent'] = self.frame
         options['title'] = 'Select the tracker controller log file'
@@ -72,9 +72,6 @@ class SpectronusData_Dialog(Frame):
         startDate = self.frame.startDateTXT.get()
         finishDate = self.frame.finishDateTXT.get()
 
-
-        # It is the new database with multiple tables.
-
         # Primary key and date/time from sysvariables
         selectSTR = 'SELECT  sysvariablesPK, Collection_Start_Time FROM sysvariables where Collection_Start_Time between '
         selectSTR += chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
@@ -84,21 +81,27 @@ class SpectronusData_Dialog(Frame):
         readStartPos = str(sysvariablesPK[0])
         readFinishPos = str(sysvariablesPK[len(sysvariablesPK) -1])
 
-        # Uncorrected species.
-        selectSTR = 'SELECT CO2, CO2_2, CH4, N2O, CO, H2O FROM analysisprimary '
+        # Cycle ID
+        selectSTR = 'SELECT CycleID FROM sysvariables '
         selectSTR += 'where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
         rows2 = ReadDatabase(databaseFilename, selectSTR)
+
+
+        # Uncorrected species.
+        selectSTR = 'SELECT CO2_2, CO2_3, CH4, N2O, CO, H2O FROM analysisprimary '
+        selectSTR += 'where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
+        rows3 = ReadDatabase(databaseFilename, selectSTR)
 
         # AI averages
         selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
         selectSTR += 'FROM aiaverages where aiaveragesID between '
         selectSTR += readStartPos + ' and ' + readFinishPos
-        rows3 = ReadDatabase(databaseFilename, selectSTR)
+        rows4 = ReadDatabase(databaseFilename, selectSTR)
 
         # Assemble all data into a single list
         fullData = []
         for i in range(0, len(rows1) -1):
-            fullData.append(rows1[i] + rows2[i] + rows3[i])
+            fullData.append(rows1[i] + rows2[i] + rows3[i] + row4)
 
         # Filter out lines that don't have all the data
         filteredData = []
@@ -106,9 +109,38 @@ class SpectronusData_Dialog(Frame):
             if (str(row).find('None') == -1):
                 filteredData.append(row)
 
+        chamber = []
+        flush = []
+
+        # Break the data into lists according to the cycle ID.
+        numCycleIDs = 2
+        cycleID_Data = [[] for i in range(numCycleIDs)]
+        for row in filteredData:
+            if (row[2] == 'chamber'):
+                cycleID_Data[0].append(row)
+            elif (row[2] == 'Inlet_2'):
+                cycleID_Data[1].append(row)
+            else:
+                # There is a problem!
+                pass
+
+        Date = [[] for i in range(numInlets)]
+        CO2 =  [[] for i in range(numInlets)]
+        CO2_12 = [[] for i in range(numInlets)]
+        CO2_13 = [[] for i in range(numInlets)]
+        CH4 = [[] for i in range(numInlets)]
+        N2O = [[] for i in range(numInlets)]
+        CO = [[] for i in range(numInlets)]
+        H2O = [[] for i in range(numInlets)]
+        Del13C = [[] for i in range(numInlets)]
+        CellPress = [[] for i in range(numInlets)]
+        FlowIn = [[] for i in range(numInlets)]
+        FlowOut = [[] for i in range(numInlets)]
+
+
         Date = ConvertToDateTime(filteredData, 1)
-        CO2 = LoadData(filteredData, 2)
-        CO2_2 = LoadData(filteredData, 3)
+        CO2_2 = LoadData(filteredData, 2)
+        CO2_3 = LoadData(filteredData, 3)
         CH4 = LoadData(filteredData, 4)
         N2O = LoadData(filteredData, 5)
         CO = LoadData(filteredData, 6)
@@ -125,8 +157,8 @@ class SpectronusData_Dialog(Frame):
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(511)
-        Ax1.scatter(Date,CO2, marker='+', label='CO2',color='r')
-        Ax1.scatter(Date,CO2_2, marker='+', label='CO2_2', color='b')
+        Ax1.scatter(Date,CO2_2, marker='+', label='CO2_2',color='r')
+        Ax1.scatter(Date,CO2_3, marker='+', label='CO2_3', color='b')
         Ax1.set_ylabel("CO2")
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
