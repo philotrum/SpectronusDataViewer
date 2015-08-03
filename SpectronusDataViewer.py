@@ -82,13 +82,13 @@ class SpectronusData_Dialog(Frame):
         readFinishPos = str(sysvariablesPK[len(sysvariablesPK) -1])
 
         # Cycle ID
-        selectSTR = 'SELECT CycleID FROM sysvariables '
-        selectSTR += 'where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
+        selectSTR = 'SELECT CycleID FROM userdefined '
+        selectSTR += 'where userdefinedID between ' + readStartPos + ' and ' + readFinishPos
         rows2 = ReadDatabase(databaseFilename, selectSTR)
 
 
         # Uncorrected species.
-        selectSTR = 'SELECT CO2_2, CO2_3, CH4, N2O, CO, H2O FROM analysisprimary '
+        selectSTR = 'SELECT CO2_2, CH4, N2O, CO, H2O FROM analysisprimary '
         selectSTR += 'where analysisprimaryID between ' + readStartPos + ' and ' + readFinishPos
         rows3 = ReadDatabase(databaseFilename, selectSTR)
 
@@ -101,7 +101,12 @@ class SpectronusData_Dialog(Frame):
         # Assemble all data into a single list
         fullData = []
         for i in range(0, len(rows1) -1):
-            fullData.append(rows1[i] + rows2[i] + rows3[i] + row4)
+            fullData.append(rows1[i] + rows2[i] + rows3[i] + rows4[i])
+
+        rows1 = []
+        rows2 = []
+        rows3 = []
+        rows4 = []
 
         # Filter out lines that don't have all the data
         filteredData = []
@@ -109,57 +114,70 @@ class SpectronusData_Dialog(Frame):
             if (str(row).find('None') == -1):
                 filteredData.append(row)
 
-        chamber = []
-        flush = []
+        fullData = []
 
         # Break the data into lists according to the cycle ID.
         numCycleIDs = 2
         cycleID_Data = [[] for i in range(numCycleIDs)]
+        # I need to filter out data with cycle IDs that aren't either "Chamber" or "Flush
+        # and create a new list with the remaining data.
+        trimmedData = []
         for row in filteredData:
-            if (row[2] == 'chamber'):
+            if (row[2] == 'Chamber'):
                 cycleID_Data[0].append(row)
-            elif (row[2] == 'Inlet_2'):
+                trimmedData.append(row)
+            elif (row[2] == 'Flush'):
                 cycleID_Data[1].append(row)
+                trimmedData.append(row)
             else:
                 # There is a problem!
                 pass
 
-        Date = [[] for i in range(numInlets)]
-        CO2 =  [[] for i in range(numInlets)]
-        CO2_12 = [[] for i in range(numInlets)]
-        CO2_13 = [[] for i in range(numInlets)]
-        CH4 = [[] for i in range(numInlets)]
-        N2O = [[] for i in range(numInlets)]
-        CO = [[] for i in range(numInlets)]
-        H2O = [[] for i in range(numInlets)]
-        Del13C = [[] for i in range(numInlets)]
-        CellPress = [[] for i in range(numInlets)]
-        FlowIn = [[] for i in range(numInlets)]
-        FlowOut = [[] for i in range(numInlets)]
+        filteredData = []
 
+        Date = [[] for i in range(numCycleIDs)]
+        CO2_12 = [[] for i in range(numCycleIDs)]
+        CH4 = [[] for i in range(numCycleIDs)]
+        N2O = [[] for i in range(numCycleIDs)]
+        CO = [[] for i in range(numCycleIDs)]
+        H2O = [[] for i in range(numCycleIDs)]
+        CellTemp = [[] for i in range(numCycleIDs)]
+        RoomTemp = [[] for i in range(numCycleIDs)]
+        CellPress = [[] for i in range(numCycleIDs)]
+        FlowIn = [[] for i in range(numCycleIDs)]
+        FlowOut = [[] for i in range(numCycleIDs)]
 
-        Date = ConvertToDateTime(filteredData, 1)
-        CO2_2 = LoadData(filteredData, 2)
-        CO2_3 = LoadData(filteredData, 3)
-        CH4 = LoadData(filteredData, 4)
-        N2O = LoadData(filteredData, 5)
-        CO = LoadData(filteredData, 6)
-        H2O = LoadData(filteredData, 7)
-        CellTemp = LoadData(filteredData, 8)
-        RoomTemp = LoadData(filteredData, 9)
-        CellPress = LoadData(filteredData, 10)
-        FlowIn = LoadData(filteredData, 11)
-        FlowOut = LoadData(filteredData, 12)
+        for i in range(0, numCycleIDs):
+            Date[i] = ConvertToDateTime(cycleID_Data[i], 1)
+            CO2_12[i] = LoadData(cycleID_Data[i], 3)
+            CH4[i] = LoadData(cycleID_Data[i], 4)
+            N2O[i] = LoadData(cycleID_Data[i], 5)
+            CO[i] = LoadData(cycleID_Data[i], 6)
+            H2O[i] = LoadData(cycleID_Data[i], 7)
+            CellPress[i] = LoadData(cycleID_Data[i], 10)
+            FlowIn[i] = LoadData(cycleID_Data[i], 11)
+            FlowOut[i] = LoadData(cycleID_Data[i], 12)
+
+        # I don't want to seperate cell and room temperature data by cycle ID
+        fullDates = ConvertToDateTime(trimmedData, 1)
+        CellTemp = LoadData(trimmedData, 8)
+        RoomTemp = LoadData(trimmedData, 9)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
-        ConcentrationsFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
+        if (len(fullDates) > 0):
+            ConcentrationsFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to '
+                                + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
+
+        cycleIDs = ['Chamber', 'Flush']
+        colours = ['b', 'r']
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(511)
-        Ax1.scatter(Date,CO2_2, marker='+', label='CO2_2',color='r')
-        Ax1.scatter(Date,CO2_3, marker='+', label='CO2_3', color='b')
-        Ax1.set_ylabel("CO2")
+        for i in range(numCycleIDs):
+            if (len(CO2_12[i]) > 0):
+                Ax1.scatter(Date[i],CO2_12[i], marker='+', label=cycleIDs[i], color=colours[i])
+        Ax1.set_ylabel('12 CO2')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax1.grid(True)
@@ -167,58 +185,80 @@ class SpectronusData_Dialog(Frame):
 
         # CO
         Ax3=ConcentrationsFig.add_subplot(512, sharex=Ax1)
-        Ax3.scatter(Date,CO, marker='+')
+        for i in range(numCycleIDs):
+            if (len(CO[i]) > 0):
+                Ax3.scatter(Date[i],CO[i], marker='+', label=cycleIDs[i], color=colours[i])
         Ax3.set_ylabel('CO')
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
+        Ax3.yaxis.set_label_position("right")
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CH4
         Ax4=ConcentrationsFig.add_subplot(513, sharex=Ax1)
-        Ax4.scatter(Date,CH4, marker='+')
+        for i in range(numCycleIDs):
+            if (len(CH4[i]) > 0):
+                Ax4.scatter(Date[i],CH4[i], marker='+', label=cycleIDs[i], color=colours[i])
         Ax4.set_ylabel('CH4')
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax4.yaxis.tick_right()
-        Ax4.yaxis.set_label_position("right")
         Ax4.grid(True)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # N2O
         Ax5=ConcentrationsFig.add_subplot(514, sharex=Ax1)
-        Ax5.scatter(Date,N2O, marker='+')
+        for i in range(numCycleIDs):
+            if (len(N2O[i]) > 0):
+                Ax5.scatter(Date[i],N2O[i], marker='+', label=cycleIDs[i], color=colours[i])
         Ax5.set_ylabel('N2O')
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
+        Ax5.yaxis.set_label_position("right")
         Ax5.grid(True)
         #Ax5.set_ylim(300,400)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # H2O
         Ax6=ConcentrationsFig.add_subplot(515, sharex=Ax1)
-        Ax6.scatter(Date,H2O, marker='+')
+        for i in range(numCycleIDs):
+            if (len(H2O[i]) > 0):
+                Ax6.scatter(Date[i],H2O[i], marker='+', label=cycleIDs[i], color=colours[i])
         Ax6.set_ylabel('H2O')
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
 
          # Set x axis range
-        t0 = Date[0] - dt.timedelta(0,3600)
-        t1= Date[len(Date) -1 ] + dt.timedelta(0,3600)
+        t0 = fullDates[0] - dt.timedelta(0,3600)
+        t1= fullDates[len(fullDates) -1 ] + dt.timedelta(0,3600)
         Ax6.set_xlim(t0,t1)
         Ax6.grid(True)
 
         ConcentrationsFig.autofmt_xdate()
 
         SystemStateFig = plt.figure('System State')
-        SystemStateFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
+        SystemStateFig.suptitle(databaseFilename + '\n' + str(fullDates[0]) + ' to ' + str(fullDates[len(fullDates) -1]),
+                            fontsize=14, fontweight='bold')
 
          # Cell Pressure
-        Ax1=SystemStateFig.add_subplot(411)
-        Ax1.scatter(Date,CellPress, marker='+')
+        Ax1=SystemStateFig.add_subplot(511)
+        for i in range(numCycleIDs):
+            if (len(CellPress[i]) > 0):
+                Ax1.scatter(Date[i], CellPress[i], marker='+', label=cycleIDs[i], color=colours[i])
         Ax1.set_ylabel('Cell Pressure')
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
-        Ax2=SystemStateFig.add_subplot(412, sharex=Ax1)
-        Ax2.scatter(Date,CellTemp, marker='+', label='Cell Temp')
+        Ax2=SystemStateFig.add_subplot(512, sharex=Ax1)
+        Ax2.scatter(fullDates,CellTemp, marker='+', label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
         Ax2.yaxis.tick_right()
@@ -226,17 +266,18 @@ class SpectronusData_Dialog(Frame):
         Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Room Temperature
-        Ax3=SystemStateFig.add_subplot(413, sharex=Ax1)
-        Ax3.scatter(Date,RoomTemp, marker='+', label='Room Temp')
+        Ax3=SystemStateFig.add_subplot(513, sharex=Ax1)
+        Ax3.scatter(fullDates,RoomTemp, marker='+', label='Room Temp')
         Ax3.set_ylabel('Room Temperature')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        # Cell flow
-        Ax4=SystemStateFig.add_subplot(414, sharex=Ax1)
-        Ax4.scatter(Date,FlowIn, marker='+', label='Flow In',color='r')
-        Ax4.scatter(Date,FlowOut, marker='+', label='Flow Out',color='b')
-        Ax4.set_ylabel('Cell Flows')
+        # Cell flow in
+        Ax4=SystemStateFig.add_subplot(514, sharex=Ax1)
+        for i in range(numCycleIDs):
+            if (len(FlowIn[i]) > 0):
+                Ax4.scatter(Date[i], FlowIn[i], marker='+', label=cycleIDs[i], color=colours[i])
+        Ax4.set_ylabel('Cell Flow In')
         Ax4.yaxis.set_label_position("right")
         Ax4.yaxis.tick_right()
         Ax4.grid(True)
@@ -244,11 +285,23 @@ class SpectronusData_Dialog(Frame):
         leg.get_frame().set_alpha(0.5)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
+         # Cell flow out
+        Ax5=SystemStateFig.add_subplot(515, sharex=Ax1)
+        for i in range(numCycleIDs):
+            if (len(FlowOut[i]) > 0):
+                Ax5.scatter(Date[i], FlowOut[i], marker='+', label=cycleIDs[i], color=colours[i])
+        Ax5.set_ylabel('Cell Flow Out')
+        Ax5.yaxis.tick_right()
+        Ax5.grid(True)
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
+        Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
+
         # Set x axis range
-        t0 = Date[0] - dt.timedelta(0,3600)
-        t1= Date[len(Date) -1 ] + dt.timedelta(0,3600)
-        Ax4.set_xlim(t0,t1)
-        Ax4.grid(True)
+        t0 = fullDates[0] - dt.timedelta(0,3600)
+        t1= fullDates[len(fullDates) -1 ] + dt.timedelta(0,3600)
+        Ax5.set_xlim(t0,t1)
+        Ax5.grid(True)
 
         SystemStateFig.autofmt_xdate()
         plt.show()
