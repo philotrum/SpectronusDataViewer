@@ -7,7 +7,6 @@ Created 20140516
 Plot Spectronus data
 """
 
-#import sqlite3 as lite
 import matplotlib.pyplot as plt
 from Tkinter import Tk, RIGHT, BOTH, RAISED
 from ttk import Frame, Button, Style, Label, Entry
