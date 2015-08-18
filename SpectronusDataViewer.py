@@ -192,6 +192,7 @@ class SpectronusData_Dialog(Frame):
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax3.yaxis.set_label_position("right")
+        Ax3.yaxis.tick_right()
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -203,7 +204,6 @@ class SpectronusData_Dialog(Frame):
         Ax4.set_ylabel('CH4')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
-        Ax4.yaxis.tick_right()
         Ax4.grid(True)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -216,6 +216,7 @@ class SpectronusData_Dialog(Frame):
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax5.yaxis.set_label_position("right")
+        Ax5.yaxis.tick_right()
         Ax5.grid(True)
         #Ax5.set_ylim(300,400)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
@@ -228,8 +229,6 @@ class SpectronusData_Dialog(Frame):
         Ax6.set_ylabel('H2O')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
-        Ax6.yaxis.set_label_position("right")
-        Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -291,7 +290,6 @@ class SpectronusData_Dialog(Frame):
             if (len(FlowOut[i]) > 0):
                 Ax5.scatter(Date[i], FlowOut[i], marker='+', label=cycleIDs[i], color=colours[i])
         Ax5.set_ylabel('Cell Flow Out')
-        Ax5.yaxis.tick_right()
         Ax5.grid(True)
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
