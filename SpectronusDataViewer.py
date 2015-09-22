@@ -273,7 +273,6 @@ class SpectronusData_Dialog(Frame):
         def quit():
             self.quit()
 
-
 def main():
     root = Tk()
     root.geometry("300x100+300+300")
