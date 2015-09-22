@@ -14,7 +14,7 @@ import tkFileDialog
 import datetime as dt
 import sys
 
-sys.path.append('c:/PythonScripts')
+sys.path.append('c:/Users/grahamk/Documents/Github/libraryScripts')
 
 from DatabaseManipulation import ReadDatabase, LoadData, ConvertToDateTime
 
