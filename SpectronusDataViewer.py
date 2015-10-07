@@ -93,8 +93,8 @@ class SpectronusData_Dialog(Frame):
         rows3 = ReadDatabase(databaseFilename, selectSTR)
 
         # AI averages
-        selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
-        selectSTR += 'FROM aiaverages where aiaveragesID between '
+        selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg, '
+        selectSTR += 'Tank_Hi_Avg, Tank_Lo_Avg FROM aiaverages where aiaveragesID between '
         selectSTR += readStartPos + ' and ' + readFinishPos
         rows4 = ReadDatabase(databaseFilename, selectSTR)
 
@@ -158,10 +158,12 @@ class SpectronusData_Dialog(Frame):
             FlowIn[i] = LoadData(cycleID_Data[i], 11)
             FlowOut[i] = LoadData(cycleID_Data[i], 12)
 
-        # I don't want to seperate cell and room temperature data by cycle ID
+        # I don't want to seperate cell and room temperature data or cyclinder pressures by cycle ID
         fullDates = ConvertToDateTime(trimmedData, 1)
         CellTemp = LoadData(trimmedData, 8)
         RoomTemp = LoadData(trimmedData, 9)
+        Tank_Hi = LoadData(trimmedData, 13)
+        Tank_Lo = LoadData(trimmedData, 14)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
@@ -170,7 +172,7 @@ class SpectronusData_Dialog(Frame):
                                 + str(fullDates[len(fullDates) -1]), fontsize=14, fontweight='bold')
 
         cycleIDs = ['Chamber', 'Flush']
-        colours = ['b', 'r']
+        colours = ['b', 'r', 'k', 'g']
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(511)
@@ -245,7 +247,7 @@ class SpectronusData_Dialog(Frame):
                             fontsize=14, fontweight='bold')
 
          # Cell Pressure
-        Ax1=SystemStateFig.add_subplot(511)
+        Ax1=SystemStateFig.add_subplot(611)
         for i in range(numCycleIDs):
             if (len(CellPress[i]) > 0):
                 Ax1.scatter(Date[i], CellPress[i], marker='+', label=cycleIDs[i], color=colours[i])
@@ -256,7 +258,7 @@ class SpectronusData_Dialog(Frame):
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
-        Ax2=SystemStateFig.add_subplot(512, sharex=Ax1)
+        Ax2=SystemStateFig.add_subplot(612, sharex=Ax1)
         Ax2.scatter(fullDates,CellTemp, marker='+', label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
@@ -265,18 +267,22 @@ class SpectronusData_Dialog(Frame):
         Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Room Temperature
-        Ax3=SystemStateFig.add_subplot(513, sharex=Ax1)
+        Ax3=SystemStateFig.add_subplot(613, sharex=Ax1)
         Ax3.scatter(fullDates,RoomTemp, marker='+', label='Room Temp')
         Ax3.set_ylabel('Room Temperature')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        # Cell flow in
-        Ax4=SystemStateFig.add_subplot(514, sharex=Ax1)
+        # Cell flows
+        Ax4=SystemStateFig.add_subplot(614, sharex=Ax1)
         for i in range(numCycleIDs):
             if (len(FlowIn[i]) > 0):
-                Ax4.scatter(Date[i], FlowIn[i], marker='+', label=cycleIDs[i], color=colours[i])
-        Ax4.set_ylabel('Cell Flow In')
+                Ax4.scatter(Date[i], FlowIn[i], marker='+', label='Flow in ' + cycleIDs[i], color=colours[i])
+
+        for i in range(numCycleIDs):
+            if (len(FlowOut[i]) > 0):
+                    Ax4.scatter(Date[i], FlowOut[i], marker='+', label='Flow out ' + cycleIDs[i], color=colours[i +2])
+        Ax4.set_ylabel('Cell Flows')
         Ax4.yaxis.set_label_position("right")
         Ax4.yaxis.tick_right()
         Ax4.grid(True)
@@ -284,22 +290,29 @@ class SpectronusData_Dialog(Frame):
         leg.get_frame().set_alpha(0.5)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
-         # Cell flow out
-        Ax5=SystemStateFig.add_subplot(515, sharex=Ax1)
-        for i in range(numCycleIDs):
-            if (len(FlowOut[i]) > 0):
-                Ax5.scatter(Date[i], FlowOut[i], marker='+', label=cycleIDs[i], color=colours[i])
-        Ax5.set_ylabel('Cell Flow Out')
+         # Cylinder high pressures
+        Ax5=SystemStateFig.add_subplot(615, sharex=Ax1)
+        Ax5.scatter(fullDates,Tank_Hi, marker='+', label='Tank_Hi')
+        Ax5.set_ylabel('Cylinder Pressure High')
         Ax5.grid(True)
+        Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
+
+        # Cylinder low pressure
+        Ax6=SystemStateFig.add_subplot(616, sharex=Ax1)
+        Ax6.scatter(fullDates,Tank_Lo, marker='+', label='Tank_Lo')
+        Ax6.set_ylabel('Cylinder Pressure Low')
+        Ax6.yaxis.set_label_position("right")
+        Ax6.yaxis.tick_right()
+        Ax6.grid(True)
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
-        Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
+        Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Set x axis range
         t0 = fullDates[0] - dt.timedelta(0,3600)
         t1= fullDates[len(fullDates) -1 ] + dt.timedelta(0,3600)
-        Ax5.set_xlim(t0,t1)
-        Ax5.grid(True)
+        Ax6.set_xlim(t0,t1)
+        Ax6.grid(True)
 
         SystemStateFig.autofmt_xdate()
         plt.show()
