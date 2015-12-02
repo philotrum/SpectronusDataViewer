@@ -86,8 +86,8 @@ class SpectronusData_Dialog(Frame):
         rows2 = ReadDatabase(databaseFilename, selectSTR)
 
         # Calculated vals
-        selectSTR = 'SELECT CV_del13C FROM calcvals where calcvalsID between ' + readStartPos + ' and ' + readFinishPos
-        rows3 = ReadDatabase(databaseFilename, selectSTR)
+        #selectSTR = 'SELECT CV_del13C FROM calcvals where calcvalsID between ' + readStartPos + ' and ' + readFinishPos
+        #rows3 = ReadDatabase(databaseFilename, selectSTR)
 
         # AI averages
         selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg FROM aiaverages where aiaveragesID between '
@@ -97,10 +97,10 @@ class SpectronusData_Dialog(Frame):
         # Assemble all data into a single list
         fullData = []
         for i in range(0, len(rows1) -1):
-            fullData.append(rows1[i] + rows2[i] + rows3[i] + rows4[i])
+            fullData.append(rows1[i] + rows2[i] + rows4[i]) # + rows4[i])
         rows1 = []
         rows2 = []
-        rows3 = []
+        #rows3 = []
         rows4 = []
 
         # Filter out lines that don't have all the data
@@ -134,7 +134,7 @@ class SpectronusData_Dialog(Frame):
         N2O = [[] for i in range(numInlets)]
         CO = [[] for i in range(numInlets)]
         H2O = [[] for i in range(numInlets)]
-        Del13C = [[] for i in range(numInlets)]
+        #Del13C = [[] for i in range(numInlets)]
         CellPress = [[] for i in range(numInlets)]
         FlowIn = [[] for i in range(numInlets)]
         FlowOut = [[] for i in range(numInlets)]
@@ -148,15 +148,15 @@ class SpectronusData_Dialog(Frame):
             N2O[i] = LoadData(inletData[i], 7)
             CO[i] = LoadData(inletData[i], 8)
             H2O[i] = LoadData(inletData[i], 9)
-            Del13C[i] = LoadData(inletData[i], 10)
-            CellPress[i] = LoadData(inletData[i], 13)
-            FlowIn[i] = LoadData(inletData[i], 14)
-            FlowOut[i] = LoadData(inletData[i], 15)
+            #Del13C[i] = LoadData(inletData[i], 10)
+            CellPress[i] = LoadData(inletData[i], 12)
+            FlowIn[i] = LoadData(inletData[i], 13)
+            FlowOut[i] = LoadData(inletData[i], 14)
 
         # I don't want to separate cell and room temperature data by inlet
         fullDates = ConvertToDateTime(filteredData, 1)
-        CellTemp = LoadData(filteredData, 11)
-        RoomTemp = LoadData(filteredData, 12)
+        CellTemp = LoadData(filteredData, 10)
+        RoomTemp = LoadData(filteredData, 11)
 
         filteredData = []
 
@@ -171,7 +171,7 @@ class SpectronusData_Dialog(Frame):
         colours = ['b', 'k', 'g', 'r']
 
         # CO2
-        Ax1=ConcentrationsFig.add_subplot(611)
+        Ax1=ConcentrationsFig.add_subplot(511)
         for i in range(numInlets):
             if (len(CO2[i]) > 0):
                 Ax1.scatter(Date[i],CO2[i], marker='+', label='Inlet ' + str(i + 1),color=colours[i])
@@ -182,20 +182,20 @@ class SpectronusData_Dialog(Frame):
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Del13C
-        Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
-        for i in range(numInlets):
-            if (len(Del13C[i]) > 0):
-                Ax2.scatter(Date[i],Del13C[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
-        Ax2.set_ylabel('Del13C')
-        leg = plt.legend(loc=2,ncol=1, fancybox = True)
-        leg.get_frame().set_alpha(0.5)
-        Ax2.yaxis.set_label_position("right")
-        Ax2.yaxis.tick_right()
-        Ax2.grid(True)
-        Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
+        #Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
+        #for i in range(numInlets):
+        #    if (len(Del13C[i]) > 0):
+        #        Ax2.scatter(Date[i],Del13C[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
+        #Ax2.set_ylabel('Del13C')
+        #leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        #leg.get_frame().set_alpha(0.5)
+        #Ax2.yaxis.set_label_position("right")
+        #Ax2.yaxis.tick_right()
+        #Ax2.grid(True)
+        #Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CO
-        Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
+        Ax3=ConcentrationsFig.add_subplot(512, sharex=Ax1)
         for i in range(numInlets):
             if (len(CO[i]) > 0):
                 Ax3.scatter(Date[i],CO[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
@@ -206,7 +206,7 @@ class SpectronusData_Dialog(Frame):
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CH4
-        Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
+        Ax4=ConcentrationsFig.add_subplot(513, sharex=Ax1)
         for i in range(numInlets):
             if (len(CH4[i]) > 0):
                 Ax4.scatter(Date[i],CH4[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
@@ -219,7 +219,7 @@ class SpectronusData_Dialog(Frame):
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # N2O
-        Ax5=ConcentrationsFig.add_subplot(615, sharex=Ax1)
+        Ax5=ConcentrationsFig.add_subplot(514, sharex=Ax1)
         for i in range(numInlets):
             if (len(N2O[i]) > 0):
                 Ax5.scatter(Date[i],N2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
@@ -230,7 +230,7 @@ class SpectronusData_Dialog(Frame):
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # H2O
-        Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
+        Ax6=ConcentrationsFig.add_subplot(515, sharex=Ax1)
         for i in range(numInlets):
             if (len(H2O[i]) > 0):
                 Ax6.scatter(Date[i],H2O[i], marker='+', label='Inlet ' + str(i + 1), color=colours[i])
