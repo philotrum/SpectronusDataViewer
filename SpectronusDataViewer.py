@@ -40,13 +40,13 @@ class SpectronusData_Dialog(Frame):
         self.frame.startDateLBL = Label(self, text="Start date", justify=RIGHT, width=12)
         self.frame.startDateLBL.grid(row=0,column=0)
         self.frame.startDateTXT = Entry(self, width=25)
-        starttime = dt.datetime.now() - dt.timedelta(days=3)
+        starttime = dt.datetime.now() - dt.timedelta(days=5)
         self.frame.startDateTXT.insert(0, dt.datetime.strftime(starttime, '%Y-%m-%d %H:%M'))
         self.frame.startDateTXT.grid(row=0,column=1)
         self.frame.finishDateLBL = Label(self, text="Finish date", justify=RIGHT, width=12)
         self.frame.finishDateLBL.grid(row=1,column=0)
         self.frame.finishDateTXT = Entry(self, width=25)
-        self.frame.finishDateTXT.insert(0, "2015-12-31 24:00")
+        self.frame.finishDateTXT.insert(0, "2016-12-31 24:00")
         self.frame.finishDateTXT.grid(row=1, column=1)
 
          # define buttons
