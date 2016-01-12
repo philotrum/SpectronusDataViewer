@@ -40,7 +40,7 @@ class SpectronusData_Dialog(Frame):
         self.frame.startDateLBL = Label(self, text="Start date", justify=RIGHT, width=12)
         self.frame.startDateLBL.grid(row=0,column=0)
         self.frame.startDateTXT = Entry(self, width=25)
-        starttime = dt.datetime.now() - dt.timedelta(days=5)
+        starttime = dt.datetime.now() - dt.timedelta(days=7)
         self.frame.startDateTXT.insert(0, dt.datetime.strftime(starttime, '%Y-%m-%d %H:%M'))
         self.frame.startDateTXT.grid(row=0,column=1)
         self.frame.finishDateLBL = Label(self, text="Finish date", justify=RIGHT, width=12)
