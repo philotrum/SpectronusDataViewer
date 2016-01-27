@@ -59,7 +59,7 @@ class SpectronusData_Dialog(Frame):
         self.file_opt = options = {}
         options['defaultextension'] = '.txt'
         options['filetypes'] = [('All files', '.*'), ('Database files', '.db')]
-        options['initialdir'] = 'c:/users/grahamk/dropbox/oooftidata/'
+        options['initialdir'] = 'c:/users/grahamk/ownCloudOoofti/Ooofti_db/B1Darwin'
         options['initialfile'] = '*.db'
         options['parent'] = self.frame
         options['title'] = 'Select the tracker controller log file'
@@ -91,7 +91,7 @@ class SpectronusData_Dialog(Frame):
 
         # AI averages
         selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg,  '
-        selectSTR += 'Tank_Hi_Avg, Tank_Lo_Avg FROM aiaverages where aiaveragesID between '
+        selectSTR += 'Tank_Hi_Avg, Tank_Lo_Avg, N2_Purge_Avg FROM aiaverages where aiaveragesID between '
         selectSTR += readStartPos + ' and ' + readFinishPos
         rows4 = ReadDatabase(databaseFilename, selectSTR)
 
@@ -122,6 +122,7 @@ class SpectronusData_Dialog(Frame):
         FlowOut = LoadData(filteredData, 14)
         Tank_Hi = LoadData(filteredData, 15)
         Tank_Lo = LoadData(filteredData, 16)
+        N2Purge = LoadData(filteredData, 17)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
@@ -195,7 +196,7 @@ class SpectronusData_Dialog(Frame):
 
          # Cell Pressure
         Ax1=SystemStateFig.add_subplot(611)
-        Ax1.scatter(Date,CellPress, marker='+')
+        Ax1.scatter(Date, CellPress, marker='+')
         Ax1.set_ylabel('Cell Pressure')
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
@@ -231,19 +232,29 @@ class SpectronusData_Dialog(Frame):
         # Cylinder high pressures
         Ax5=SystemStateFig.add_subplot(615, sharex=Ax1)
         Ax5.scatter(Date,Tank_Hi, marker='+', label='Tank_Hi')
-        Ax5.set_ylabel('Cylinder Pressure High')
+        Ax5.set_ylabel('Cylinder Pressure\nHigh')
         Ax5.grid(True)
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        Ax6=SystemStateFig.add_subplot(616, sharex=Ax1)
-        Ax6.scatter(Date,Tank_Lo, marker='+', label='Tank_Lo')
-        Ax6.set_ylabel('Cylinder Pressure Low')
+        # Cylinder low pressure
+        Ax6=Ax5.twinx()
+        Ax6.scatter(Date, Tank_Lo, marker='+', label='Tank_Lo', color='r')
+        Ax6.set_ylabel('Cylinder Pressure\nLow')
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
         Ax6.grid(True)
-        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg = plt.legend(loc=3,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
+
+        # N2 purge
+        Ax7=SystemStateFig.add_subplot(616, sharex=Ax1)
+        Ax7.scatter(Date, N2Purge, marker='+')
+        Ax7.set_ylabel('N2 Purge Flow')
+        Ax7.grid(True)
+        Ax7.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Set x axis range
         t0 = Date[0] - dt.timedelta(0,3600)
