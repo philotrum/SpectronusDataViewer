@@ -142,10 +142,8 @@ class SpectronusData_Dialog(Frame):
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
         Ax2.scatter(Date,Del13C, marker='+', label='Del13C', c=chamberNum)
         Ax2.set_ylabel('Del13C')
-        leg = plt.legend(loc=2,ncol=1, fancybox = True)
-        leg.get_frame().set_alpha(0.5)
-        Ax2.yaxis.set_label_position("right")
         Ax2.yaxis.tick_right()
+        Ax2.yaxis.set_label_position("right")
         Ax2.grid(True)
         Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -213,8 +211,6 @@ class SpectronusData_Dialog(Frame):
         Ax3=SystemStateFig.add_subplot(413, sharex=Ax1)
         Ax3.scatter(Date,FlowIn, marker='+', c=chamberNum)
         Ax3.set_ylabel('Cell Flow In')
-        Ax3.yaxis.set_label_position("right")
-        Ax3.yaxis.tick_right()
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
