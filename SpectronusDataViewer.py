@@ -3,7 +3,7 @@
 Created 20140516
 
 @author: G. Kettlewell
-
+cd S
 Plot Spectronus data
 """
 
@@ -16,7 +16,7 @@ import sys
 
 sys.path.append('c:/users/grahamk/Documents/Github/LibraryScripts')
 
-from DatabaseManipulation import NumTables, ReadDatabase, LoadData, ConvertToDateTime
+from DatabaseManipulation import ReadDatabase, LoadData, ConvertToDateTime
 
 class SpectronusData_Dialog(Frame):
 
