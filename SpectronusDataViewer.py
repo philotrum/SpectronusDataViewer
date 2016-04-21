@@ -8,15 +8,17 @@ Plot Spectronus data
 """
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from Tkinter import Tk, RIGHT, BOTH, RAISED
 from ttk import Frame, Button, Style, Label, Entry
 import tkFileDialog
 import datetime as dt
 import sys
+import numpy as np
 
 sys.path.append('c:/users/grahamk/Documents/Github/LibraryScripts')
 
-from DatabaseManipulation import NumTables, ReadDatabase, LoadData, ConvertToDateTime
+from DatabaseManipulation import ReadDatabase, LoadData, ConvertToDateTime
 
 class SpectronusData_Dialog(Frame):
 
@@ -114,8 +116,6 @@ class SpectronusData_Dialog(Frame):
 
         Date = ConvertToDateTime(filteredData, 1)
         CO2 = LoadData(filteredData, 2)
-        CO2_12 = LoadData(filteredData, 3)
-        CO2_13 = LoadData(filteredData, 4)
         CH4 = LoadData(filteredData, 5)
         N2O = LoadData(filteredData, 6)
         CO = LoadData(filteredData, 7)
@@ -133,10 +133,14 @@ class SpectronusData_Dialog(Frame):
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(611)
-        Ax1.scatter(Date,CO2, marker='+', label='CO2',c=chamberNum)
+        s=Ax1.scatter(Date,CO2, marker='+', label='CO2',c=chamberNum)
         Ax1.set_ylabel("CO2")
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
+        div = make_axes_locatable(Ax1)
+        cax=div.append_axes('top', size='5%', pad=0.4)
+        cbar=ConcentrationsFig.colorbar(s, cax=cax, ticks=np.arange(0,12,1), orientation='horizontal')
+        cbar.set_label('Chamber')
 
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
