@@ -74,7 +74,7 @@ class SpectronusData_Dialog(Frame):
         finishDate = self.frame.finishDateTXT.get()
 
         # Primary key and date/time from sysvariables
-        selectSTR = 'SELECT  sysvariablesPK, Collection_Start_Time FROM sysvariables where Collection_Start_Time between '
+        selectSTR = 'SELECT sysvariablesPK, Collection_Start_Time FROM sysvariables where Collection_Start_Time between '
         selectSTR += chr(39) + startDate + chr(39) + ' and ' + chr(39) +  finishDate + chr(39)
         rows1 = ReadDatabase(databaseFilename, selectSTR)
         sysvariablesPK = LoadData(rows1, 0)
@@ -137,10 +137,6 @@ class SpectronusData_Dialog(Frame):
         Ax1.set_ylabel("CO2")
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
-        div = make_axes_locatable(Ax1)
-        cax=div.append_axes('top', size='5%', pad=0.4)
-        cbar=ConcentrationsFig.colorbar(s, cax=cax, ticks=np.arange(0,12,1), orientation='horizontal')
-        cbar.set_label('Chamber')
 
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
@@ -183,6 +179,11 @@ class SpectronusData_Dialog(Frame):
         Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
+
+        #div = make_axes_locatable(Ax1)
+        #cax=div.append_axes('top', size='5%', pad=0.4)
+        #cbar=ConcentrationsFig.colorbar(s, cax=cax, ticks=np.arange(0,12,1), orientation='horizontal')
+        #cbar.set_label('Chamber')
 
          # Set x axis range
         t0 = Date[0] - dt.timedelta(0,3600)
