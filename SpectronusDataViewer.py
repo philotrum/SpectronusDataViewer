@@ -136,16 +136,16 @@ class SpectronusData_Dialog(Frame):
         s=Ax1.scatter(Date,CO2, marker='+', label='CO2',c=chamberNum)
         Ax1.set_ylabel("CO2")
         Ax1.grid(True)
-        Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
+        #Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
         Ax2.scatter(Date,Del13C, marker='+', label='Del13C', c=chamberNum)
         Ax2.set_ylabel('Del13C')
-        Ax2.yaxis.tick_right()
-        Ax2.yaxis.set_label_position("right")
+        #Ax2.yaxis.tick_right()
+        #Ax2.yaxis.set_label_position("right")
         Ax2.grid(True)
-        Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
+        #Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CO
         Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
@@ -158,8 +158,8 @@ class SpectronusData_Dialog(Frame):
         Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
         Ax4.scatter(Date,CH4, c=chamberNum, marker='+')
         Ax4.set_ylabel('CH4')
-        Ax4.yaxis.tick_right()
-        Ax4.yaxis.set_label_position("right")
+        #Ax4.yaxis.tick_right()
+        #Ax4.yaxis.set_label_position("right")
         Ax4.grid(True)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -175,8 +175,8 @@ class SpectronusData_Dialog(Frame):
         Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
         Ax6.scatter(Date,H2O, c=chamberNum, marker='+')
         Ax6.set_ylabel('H2O')
-        Ax6.yaxis.set_label_position("right")
-        Ax6.yaxis.tick_right()
+        #Ax6.yaxis.set_label_position("right")
+        #Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
 
