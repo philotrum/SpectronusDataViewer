@@ -126,7 +126,7 @@ class SpectronusData_Dialog(Frame):
 
             # AI averages
             selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
-            selectSTR += 'FROM aiaverages where aiaveragesID between '
+            selectSTR += 'N2_TankPressure_Avg, N2_LowPressure_Avg, N2_Flow_Avg FROM aiaverages where aiaveragesID between '
             selectSTR += readStartPos + ' and ' + readFinishPos
             rows4 = ReadDatabase(databaseFilename, selectSTR)
 
@@ -155,6 +155,9 @@ class SpectronusData_Dialog(Frame):
             CellPress = LoadData(filteredData, 12)
             FlowIn = LoadData(filteredData, 13)
             FlowOut = LoadData(filteredData, 14)
+            Tank_Hi = LoadData(filteredData, 15)
+            Tank_Lo = LoadData(filteredData, 16)
+            N2Purge = LoadData(filteredData, 17)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
@@ -227,14 +230,14 @@ class SpectronusData_Dialog(Frame):
         SystemStateFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
 
          # Cell Pressure
-        Ax1=SystemStateFig.add_subplot(411)
+        Ax1=SystemStateFig.add_subplot(611)
         Ax1.scatter(Date,CellPress, marker='+')
         Ax1.set_ylabel('Cell Pressure')
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
-        Ax2=SystemStateFig.add_subplot(412, sharex=Ax1)
+        Ax2=SystemStateFig.add_subplot(612, sharex=Ax1)
         Ax2.scatter(Date,CellTemp, marker='+', label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
@@ -243,14 +246,14 @@ class SpectronusData_Dialog(Frame):
         Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Room Temperature
-        Ax3=SystemStateFig.add_subplot(413, sharex=Ax1)
+        Ax3=SystemStateFig.add_subplot(613, sharex=Ax1)
         Ax3.scatter(Date,RoomTemp, marker='+', label='Room Temp')
         Ax3.set_ylabel('Room Temperature')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell flow
-        Ax4=SystemStateFig.add_subplot(414, sharex=Ax1)
+        Ax4=SystemStateFig.add_subplot(614, sharex=Ax1)
         Ax4.scatter(Date,FlowIn, marker='+', label='Flow In',color='r')
         Ax4.scatter(Date,FlowOut, marker='+', label='Flow Out',color='b')
         Ax4.set_ylabel('Cell Flows')
@@ -260,6 +263,34 @@ class SpectronusData_Dialog(Frame):
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
+        
+        # Cylinder high pressures
+        Ax5=SystemStateFig.add_subplot(615, sharex=Ax1)
+        Ax5.scatter(Date,Tank_Hi, marker='+', label='Tank_Hi')
+        Ax5.set_ylabel('Cylinder Pressure\nHigh')
+        Ax5.grid(True)
+        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
+        Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
+
+        # Cylinder low pressure
+        Ax6=Ax5.twinx()
+        Ax6.scatter(Date, Tank_Lo, marker='+', label='Tank_Lo', color='r')
+        Ax6.set_ylabel('Cylinder Pressure\nLow')
+        Ax6.yaxis.set_label_position("right")
+        Ax6.yaxis.tick_right()
+        Ax6.grid(True)
+        leg = plt.legend(loc=3,ncol=1, fancybox = True)
+        leg.get_frame().set_alpha(0.5)
+        Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
+
+        # N2 purge
+        Ax7=SystemStateFig.add_subplot(616, sharex=Ax1)
+        Ax7.scatter(Date, N2Purge, marker='+')
+        Ax7.set_ylabel('N2 Purge Flow')
+        Ax7.grid(True)
+        Ax7.get_yaxis().get_major_formatter().set_useOffset(False)
+
 
         # Set x axis range
         t0 = Date[0] - dt.timedelta(0,3600)
