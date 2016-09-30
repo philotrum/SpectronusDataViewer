@@ -59,7 +59,7 @@ class SpectronusData_Dialog(Frame):
         self.file_opt = options = {}
         options['defaultextension'] = '.txt'
         options['filetypes'] = [('All files', '.*'), ('Database files', '.db')]
-        options['initialdir'] = 'c:/users/grahamk/ownCloud/oooftidata/'
+        options['initialdir'] = 'c:/users/grahamk/Documents/Data/OooftiData/Thomas'
         options['initialfile'] = '*.db'
         options['parent'] = self.frame
         options['title'] = 'Select the tracker controller log file'
