@@ -125,7 +125,8 @@ class SpectronusData_Dialog(Frame):
             rows3 = ReadDatabase(databaseFilename, selectSTR)
 
             # AI averages
-            selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg '
+            selectSTR = 'SELECT Cell_Temperature_Avg, Room_Temperature_Avg, Cell_Pressure_Avg, Flow_In_Avg, Flow_Out_Avg, '
+            #selectSTR += 'N2_LowPressure_Avg, N2_Flow_Avg FROM aiaverages where aiaveragesID between '
             selectSTR += 'N2_TankPressure_Avg, N2_LowPressure_Avg, N2_Flow_Avg FROM aiaverages where aiaveragesID between '
             selectSTR += readStartPos + ' and ' + readFinishPos
             rows4 = ReadDatabase(databaseFilename, selectSTR)
