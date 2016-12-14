@@ -92,8 +92,8 @@ class SpectronusData_Dialog(Frame):
         rows3 = ReadDatabase(databaseFilename, selectSTR)
 
         # AI averages
-        selectSTR = 'SELECT Cell_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg, Atm_Pressure_Avg '
-        selectSTR += 'FROM aiaverages where aiaveragesID between '
+        selectSTR = 'SELECT Cell_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg, Atm_Pressure_Avg, '
+        selectSTR += 'Atm_Temperature_Avg FROM aiaverages where aiaveragesID between '
         selectSTR += readStartPos + ' and ' + readFinishPos
         rows4 = ReadDatabase(databaseFilename, selectSTR)
 
@@ -126,7 +126,8 @@ class SpectronusData_Dialog(Frame):
         FlowIn = LoadData(filteredData, 12)
         FlowOut = LoadData(filteredData, 13)
         AtmPressure = LoadData(filteredData,14)
-        chamberNum = LoadData(filteredData, 15)
+        AtmTemp = LoadData(filteredData,15)
+        chamberNum = LoadData(filteredData, 16)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
         ConcentrationsFig.subplots_adjust(hspace=0.1)
@@ -137,17 +138,13 @@ class SpectronusData_Dialog(Frame):
         s=Ax1.scatter(Date,CO2, marker='+', label='CO2',c=chamberNum)
         Ax1.set_ylabel("CO2")
         Ax1.grid(True)
-        #Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
         Ax2.scatter(Date,Del13C, marker='+', label='Del13C', c=chamberNum)
         Ax2.set_ylabel('Del13C')
-        #Ax2.yaxis.tick_right()
-        #Ax2.yaxis.set_label_position("right")
         Ax2.grid(True)
-        #Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
-
+ 
         # CO
         Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
         Ax3.scatter(Date,CO, c=chamberNum, marker='+')
@@ -159,8 +156,6 @@ class SpectronusData_Dialog(Frame):
         Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
         Ax4.scatter(Date,CH4, c=chamberNum, marker='+')
         Ax4.set_ylabel('CH4')
-        #Ax4.yaxis.tick_right()
-        #Ax4.yaxis.set_label_position("right")
         Ax4.grid(True)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -176,8 +171,6 @@ class SpectronusData_Dialog(Frame):
         Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
         Ax6.scatter(Date,H2O, c=chamberNum, marker='+')
         Ax6.set_ylabel('H2O')
-        #Ax6.yaxis.set_label_position("right")
-        #Ax6.yaxis.tick_right()
         Ax6.grid(True)
         Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
 
@@ -198,14 +191,14 @@ class SpectronusData_Dialog(Frame):
         SystemStateFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
 
          # Cell Pressure
-        Ax1=SystemStateFig.add_subplot(511)
+        Ax1=SystemStateFig.add_subplot(611)
         Ax1.scatter(Date,CellPress, c=chamberNum, marker='+')
         Ax1.set_ylabel('Cell Pressure')
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
-        Ax2=SystemStateFig.add_subplot(512, sharex=Ax1)
+        Ax2=SystemStateFig.add_subplot(612, sharex=Ax1)
         Ax2.scatter(Date,CellTemp, c=chamberNum, marker='+', label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
@@ -214,14 +207,14 @@ class SpectronusData_Dialog(Frame):
         Ax2.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell flow in
-        Ax3=SystemStateFig.add_subplot(513, sharex=Ax1)
+        Ax3=SystemStateFig.add_subplot(613, sharex=Ax1)
         Ax3.scatter(Date,FlowIn, marker='+', c=chamberNum)
         Ax3.set_ylabel('Cell Flow In')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell flow out
-        Ax4=SystemStateFig.add_subplot(514, sharex=Ax1)
+        Ax4=SystemStateFig.add_subplot(614, sharex=Ax1)
         Ax4.scatter(Date,FlowOut, marker='x', c=chamberNum)
         Ax4.set_ylabel('Cell Flow Out')
         Ax4.yaxis.set_label_position("right")
@@ -230,11 +223,21 @@ class SpectronusData_Dialog(Frame):
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
         
         # Atmospheric pressure
-        Ax5=SystemStateFig.add_subplot(515, sharex=Ax1)
+        Ax5=SystemStateFig.add_subplot(615, sharex=Ax1)
         Ax5.scatter(Date, AtmPressure,marker='+', c=chamberNum)
         Ax5.set_ylabel('Atmospheric pressure')
         Ax5.grid(True)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
+        
+        # Atmospheric temperature
+        Ax6=SystemStateFig.add_subplot(616, sharex=Ax1)
+        Ax6.scatter(Date, AtmTemp,marker='+', c=chamberNum)
+        Ax6.set_ylabel('Atmospheric temperature')
+        Ax6.grid(True)
+        Ax6.yaxis.set_label_position('right')
+        Ax6.yaxis.tick_right()
+        Ax6.get_yaxis().get_major_formatter().set_useOffset(False)
+
 
         # Set x axis range
         t0 = Date[0] - dt.timedelta(0,3600)
