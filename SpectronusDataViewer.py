@@ -46,7 +46,7 @@ class SpectronusData_Dialog(Frame):
         self.frame.finishDateLBL = Label(self, text="Finish date", justify=RIGHT, width=12)
         self.frame.finishDateLBL.grid(row=1,column=0)
         self.frame.finishDateTXT = Entry(self, width=25)
-        self.frame.finishDateTXT.insert(0, "2016-12-31 24:00")
+        self.frame.finishDateTXT.insert(0, "2017-12-31 24:00")
         self.frame.finishDateTXT.grid(row=1, column=1)
 
          # define buttons
