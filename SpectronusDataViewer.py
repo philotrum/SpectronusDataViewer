@@ -224,7 +224,7 @@ class SpectronusData_Dialog(Frame):
         ConcentrationsFig.autofmt_xdate()
 
         SystemStateFig = plt.figure('System State')
-        SystemStateFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
+        #SystemStateFig.suptitle(databaseFilename + '\n' + str(Date[0]) + ' to ' + str(Date[len(Date) -1]), fontsize=14, fontweight='bold')
 
          # Cell Pressure
         Ax1=SystemStateFig.add_subplot(411)
