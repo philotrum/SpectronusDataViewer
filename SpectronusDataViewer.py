@@ -3,14 +3,12 @@
 Created 20140516
 
 @author: G. Kettlewell
-cd S
 Plot Spectronus data
 """
 
 import matplotlib.pyplot as plt
-from Tkinter import Tk, RIGHT, BOTH, RAISED
-from ttk import Frame, Button, Style, Label, Entry
-import tkFileDialog
+from tkinter import Tk, RIGHT, BOTH, RAISED, filedialog
+from tkinter.ttk import Frame, Button, Style, Label, Entry
 import datetime as dt
 import sys
 
@@ -67,7 +65,7 @@ class SpectronusData_Dialog(Frame):
     def openDatabase(self):
 
         # Get filename and dates
-        databaseFilename = tkFileDialog.askopenfilename(**self.file_opt)
+        databaseFilename = filedialog.askopenfilename(**self.file_opt)
         startDate = self.frame.startDateTXT.get()
         finishDate = self.frame.finishDateTXT.get()
 
