@@ -8,9 +8,9 @@ Plot Spectronus data
 """
 
 import matplotlib.pyplot as plt
-from Tkinter import Tk, RIGHT, BOTH, RAISED
-from ttk import Frame, Button, Style, Label, Entry
-import tkFileDialog
+from tkinter import Tk, RIGHT, BOTH, RAISED, filedialog
+from tkinter.ttk import Frame, Button, Style, Label, Entry
+#import tkFileDialog
 import datetime as dt
 import sys
 
@@ -67,7 +67,7 @@ class SpectronusData_Dialog(Frame):
     def openDatabase(self):
 
         # Get filename and dates
-        databaseFilename = tkFileDialog.askopenfilename(**self.file_opt)
+        databaseFilename = filedialog.askopenfilename(**self.file_opt)
         startDate = self.frame.startDateTXT.get()
         finishDate = self.frame.finishDateTXT.get()
 
@@ -84,7 +84,7 @@ class SpectronusData_Dialog(Frame):
             #selectSTR += ' and Inlet = ' + chr(39) + 'Inlet_3' + chr(39)
             #if (databaseFilename.find('Darwin') != -1):
             #    selectSTR += ' and Cell_Pressure_Avg > 1098'
-            print selectSTR
+            print(selectSTR)
 
             rows = ReadDatabase(databaseFilename, selectSTR)
 
