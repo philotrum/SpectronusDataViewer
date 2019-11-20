@@ -89,7 +89,7 @@ class SpectronusData_Dialog(Frame):
 
         # AI averages
         selectSTR = 'SELECT Cell_Temperature_Avg,Room_Temperature_Avg,Cell_Pressure_Avg,Flow_In_Avg,Flow_Out_Avg,  '
-        selectSTR += 'Tank_Hi_Avg, Tank_Lo_Avg, N2_Purge_Avg FROM aiaverages where aiaveragesID between '
+        selectSTR += 'N2_Tank_Hi_Avg, Target_Tank_Hi_Avg, N2_Purge_Avg FROM aiaverages where aiaveragesID between '
         selectSTR += readStartPos + ' and ' + readFinishPos
         rows4 = ReadDatabase(databaseFilename, selectSTR)
 
@@ -118,8 +118,8 @@ class SpectronusData_Dialog(Frame):
         CellPress = LoadData(filteredData, 12)
         FlowIn = LoadData(filteredData, 13)
         FlowOut = LoadData(filteredData, 14)
-        Tank_Hi = LoadData(filteredData, 15)
-        Tank_Lo = LoadData(filteredData, 16)
+        N2_Tank_Hi = LoadData(filteredData, 15)
+        Target_Tank_Hi = LoadData(filteredData, 16)
         N2Purge = LoadData(filteredData, 17)
 
         ConcentrationsFig = plt.figure('Concentration retrievals')
@@ -227,19 +227,19 @@ class SpectronusData_Dialog(Frame):
         leg.get_frame().set_alpha(0.5)
         Ax4.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        # Cylinder high pressures
+        # N2 tank high
         Ax5=SystemStateFig.add_subplot(615, sharex=Ax1)
-        Ax5.scatter(Date,Tank_Hi, marker='+', label='Tank_Hi')
-        Ax5.set_ylabel('Cylinder Pressure\nHigh')
+        Ax5.scatter(Date,N2_Tank_Hi, marker='+', label='N2_Tank_Hi')
+        Ax5.set_ylabel('N2 Tank High')
         Ax5.grid(True)
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
-        # Cylinder low pressure
+        # Target tank high
         Ax6=Ax5.twinx()
-        Ax6.scatter(Date, Tank_Lo, marker='+', label='Tank_Lo', color='r')
-        Ax6.set_ylabel('Cylinder Pressure\nLow')
+        Ax6.scatter(Date, Target_Tank_Hi, marker='+', label='Target_Tank_Hi', color='r')
+        Ax6.set_ylabel('Target Tank High')
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
         Ax6.grid(True)
