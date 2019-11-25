@@ -232,7 +232,7 @@ class SpectronusData_Dialog(Frame):
         Ax5.scatter(Date,N2_Tank_Hi, marker='+', label='N2_Tank_Hi')
         Ax5.set_ylabel('N2 Tank High')
         Ax5.grid(True)
-        leg = plt.legend(loc=2,ncol=1, fancybox = True)
+        leg = plt.legend(loc=1,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
         Ax5.get_yaxis().get_major_formatter().set_useOffset(False)
 
