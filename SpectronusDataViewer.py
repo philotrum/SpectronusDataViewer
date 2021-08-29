@@ -128,9 +128,9 @@ class SpectronusData_Dialog(Frame):
 
         # CO2
         Ax1=ConcentrationsFig.add_subplot(611)
-        Ax1.scatter(Date,CO2, marker='+', label='CO2',color='r')
-        Ax1.scatter(Date,CO2_12, marker='+', label='12CO2', color='b')
-        Ax1.scatter(Date,CO2_13, marker='+', label='13CO2', color='g')
+        Ax1.scatter(Date,CO2, label='CO2',color='r')
+        Ax1.scatter(Date,CO2_12, label='12CO2', color='b')
+        Ax1.scatter(Date,CO2_13, label='13CO2', color='g')
         Ax1.set_ylabel("CO2")
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -139,7 +139,7 @@ class SpectronusData_Dialog(Frame):
 
         # Del13C
         Ax2=ConcentrationsFig.add_subplot(612, sharex=Ax1)
-        Ax2.scatter(Date,Del13C, marker='+', label='Del13C', color='r')
+        Ax2.scatter(Date,Del13C, label='Del13C', color='r')
         Ax2.set_ylabel('Del13C')
         leg = plt.legend(loc=2,ncol=1, fancybox = True)
         leg.get_frame().set_alpha(0.5)
@@ -150,14 +150,14 @@ class SpectronusData_Dialog(Frame):
 
         # CO
         Ax3=ConcentrationsFig.add_subplot(613, sharex=Ax1)
-        Ax3.scatter(Date,CO, marker='+')
+        Ax3.scatter(Date,CO)
         Ax3.set_ylabel('CO')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # CH4
         Ax4=ConcentrationsFig.add_subplot(614, sharex=Ax1)
-        Ax4.scatter(Date,CH4, marker='+')
+        Ax4.scatter(Date,CH4)
         Ax4.set_ylabel('CH4')
         Ax4.yaxis.tick_right()
         Ax4.yaxis.set_label_position("right")
@@ -166,7 +166,7 @@ class SpectronusData_Dialog(Frame):
 
         # N2O
         Ax5=ConcentrationsFig.add_subplot(615, sharex=Ax1)
-        Ax5.scatter(Date,N2O, marker='+')
+        Ax5.scatter(Date,N2O)
         Ax5.set_ylabel('N2O')
         Ax5.grid(True)
         #Ax5.set_ylim(300,400)
@@ -174,7 +174,7 @@ class SpectronusData_Dialog(Frame):
 
         # H2O
         Ax6=ConcentrationsFig.add_subplot(616, sharex=Ax1)
-        Ax6.scatter(Date,H2O, marker='+')
+        Ax6.scatter(Date,H2O)
         Ax6.set_ylabel('H2O')
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
@@ -194,14 +194,14 @@ class SpectronusData_Dialog(Frame):
 
          # Cell Pressure
         Ax1=SystemStateFig.add_subplot(611)
-        Ax1.scatter(Date, CellPress, marker='+')
+        Ax1.scatter(Date, CellPress)
         Ax1.set_ylabel('Cell Pressure')
         Ax1.grid(True)
         Ax1.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell Temperature
         Ax2=SystemStateFig.add_subplot(612, sharex=Ax1)
-        Ax2.scatter(Date,CellTemp, marker='+', label='Cell Temp')
+        Ax2.scatter(Date,CellTemp, label='Cell Temp')
         Ax2.set_ylabel('Cell Temperature')
         Ax2.yaxis.set_label_position("right")
         Ax2.yaxis.tick_right()
@@ -210,15 +210,15 @@ class SpectronusData_Dialog(Frame):
 
         # Room Temperature
         Ax3=SystemStateFig.add_subplot(613, sharex=Ax1)
-        Ax3.scatter(Date,RoomTemp, marker='+', label='Room Temp')
+        Ax3.scatter(Date,RoomTemp, label='Room Temp')
         Ax3.set_ylabel('Room Temperature')
         Ax3.grid(True)
         Ax3.get_yaxis().get_major_formatter().set_useOffset(False)
 
         # Cell flow
         Ax4=SystemStateFig.add_subplot(614, sharex=Ax1)
-        Ax4.scatter(Date,FlowIn, marker='+', label='Flow In',color='r')
-        Ax4.scatter(Date,FlowOut, marker='+', label='Flow Out',color='b')
+        Ax4.scatter(Date,FlowIn, label='Flow In',color='r')
+        Ax4.scatter(Date,FlowOut, label='Flow Out',color='b')
         Ax4.set_ylabel('Cell Flows')
         Ax4.yaxis.set_label_position("right")
         Ax4.yaxis.tick_right()
@@ -229,7 +229,7 @@ class SpectronusData_Dialog(Frame):
 
         # N2 tank high
         Ax5=SystemStateFig.add_subplot(615, sharex=Ax1)
-        Ax5.scatter(Date,N2_Tank_Hi, marker='+', label='N2_Tank_Hi')
+        Ax5.scatter(Date,N2_Tank_Hi, label='N2_Tank_Hi')
         Ax5.set_ylabel('N2 Tank High')
         Ax5.grid(True)
         leg = plt.legend(loc=1,ncol=1, fancybox = True)
@@ -238,7 +238,7 @@ class SpectronusData_Dialog(Frame):
 
         # Target tank high
         Ax6=Ax5.twinx()
-        Ax6.scatter(Date, Target_Tank_Hi, marker='+', label='Target_Tank_Hi', color='r')
+        Ax6.scatter(Date, Target_Tank_Hi, label='Target_Tank_Hi', color='r')
         Ax6.set_ylabel('Target Tank High')
         Ax6.yaxis.set_label_position("right")
         Ax6.yaxis.tick_right()
@@ -249,7 +249,7 @@ class SpectronusData_Dialog(Frame):
 
         # N2 purge
         Ax7=SystemStateFig.add_subplot(616, sharex=Ax1)
-        Ax7.scatter(Date, N2Purge, marker='+')
+        Ax7.scatter(Date, N2Purge)
         Ax7.set_ylabel('N2 Purge Flow')
         Ax7.grid(True)
         Ax7.get_yaxis().get_major_formatter().set_useOffset(False)
